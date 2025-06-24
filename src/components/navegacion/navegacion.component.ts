@@ -1,6 +1,7 @@
 /**
  * Componente de navegación principal
  * Maneja la navegación suave entre secciones y efectos de scroll
+ * Ahora incluye la nueva sección de Videos
  */
 
 import { Component, HostListener, OnInit } from '@angular/core';
@@ -28,6 +29,7 @@ import { CommonModule } from '@angular/common';
             <li><a href="#personajes" (click)="scrollToSection('personajes', $event)">Personajes</a></li>
             <li><a href="#timeline" (click)="scrollToSection('timeline', $event)">Historia</a></li>
             <li><a href="#galeria" (click)="scrollToSection('galeria', $event)">Galería</a></li>
+            <li><a href="#videos" (click)="navegarAVideos($event)" class="nav-videos">Videos</a></li>
           </ul>
         </div>
 
@@ -147,6 +149,37 @@ import { CommonModule } from '@angular/common';
       width: 100%;
     }
 
+    .nav-videos {
+      background: linear-gradient(135deg, var(--color-acento), #ff8c69) !important;
+      color: var(--color-texto-claro) !important;
+      border-radius: 20px !important;
+      padding: var(--espaciado-xs) var(--espaciado-md) !important;
+      font-weight: 700 !important;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-videos::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left var(--transicion-lenta);
+    }
+
+    .nav-videos:hover::before {
+      left: 100%;
+    }
+
+    .nav-videos:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--sombra-media);
+      background: linear-gradient(135deg, #ff8c69, var(--color-acento)) !important;
+    }
+
     .nav-toggle {
       display: none;
       flex-direction: column;
@@ -223,6 +256,10 @@ import { CommonModule } from '@angular/common';
         border-color: var(--color-acento);
         background: rgba(255, 107, 53, 0.1);
       }
+
+      .nav-videos {
+        border-radius: 8px !important;
+      }
     }
 
     @media (max-width: 480px) {
@@ -239,6 +276,7 @@ import { CommonModule } from '@angular/common';
 export class NavegacionComponent implements OnInit {
   isScrolled = false;
   isMenuOpen = false;
+  mostrandoVideos = false;
 
   ngOnInit() {
     // Inicializar estado de scroll
@@ -279,6 +317,58 @@ export class NavegacionComponent implements OnInit {
   }
 
   /**
+   * Navega a la sección de videos
+   */
+  navegarAVideos(event: Event) {
+    event.preventDefault();
+    this.isMenuOpen = false;
+    this.mostrarSeccionVideos();
+  }
+
+  /**
+   * Muestra la sección de videos
+   */
+  private mostrarSeccionVideos() {
+    // Ocultar todas las secciones principales
+    const secciones = [
+      '.hero-section',
+      '.personajes-section', 
+      '.timeline-section',
+      '.galeria-section'
+    ];
+
+    secciones.forEach(selector => {
+      const elemento = document.querySelector(selector) as HTMLElement;
+      if (elemento) {
+        elemento.style.display = 'none';
+      }
+    });
+
+    // Mostrar o crear la sección de videos
+    let seccionVideos = document.querySelector('.videos-section') as HTMLElement;
+    
+    if (!seccionVideos) {
+      // Crear la sección de videos si no existe
+      seccionVideos = document.createElement('app-videos');
+      seccionVideos.className = 'videos-section';
+      
+      const mainContent = document.querySelector('.main-content');
+      if (mainContent) {
+        mainContent.appendChild(seccionVideos);
+      }
+    }
+
+    seccionVideos.style.display = 'block';
+    this.mostrandoVideos = true;
+
+    // Scroll suave al inicio
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+
+  /**
    * Maneja la navegación suave a secciones específicas
    * @param sectionId - ID de la sección objetivo
    * @param event - Evento del click
@@ -288,6 +378,11 @@ export class NavegacionComponent implements OnInit {
     
     // Cerrar menú móvil si está abierto
     this.isMenuOpen = false;
+
+    // Si estamos en la sección de videos, volver a mostrar las secciones principales
+    if (this.mostrandoVideos) {
+      this.mostrarSeccionesPrincipales();
+    }
 
     // Mapeo de IDs de sección a selectores
     const sectionMap: { [key: string]: string } = {
@@ -299,16 +394,47 @@ export class NavegacionComponent implements OnInit {
 
     const targetSelector = sectionMap[sectionId];
     if (targetSelector) {
-      const targetElement = document.querySelector(targetSelector);
-      if (targetElement) {
-        const navbarHeight = 80; // Altura aproximada de la navbar
-        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+      // Pequeño delay para asegurar que las secciones estén visibles
+      setTimeout(() => {
+        const targetElement = document.querySelector(targetSelector);
+        if (targetElement) {
+          const navbarHeight = 80; // Altura aproximada de la navbar
+          const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
 
-        window.scrollTo({
-          top: targetPosition,
-          behavior: 'smooth'
-        });
-      }
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
     }
+  }
+
+  /**
+   * Muestra las secciones principales y oculta la de videos
+   */
+  private mostrarSeccionesPrincipales() {
+    // Mostrar todas las secciones principales
+    const secciones = [
+      '.hero-section',
+      '.personajes-section', 
+      '.timeline-section',
+      '.galeria-section'
+    ];
+
+    secciones.forEach(selector => {
+      const elemento = document.querySelector(selector) as HTMLElement;
+      if (elemento) {
+        elemento.style.display = 'block';
+      }
+    });
+
+    // Ocultar la sección de videos
+    const seccionVideos = document.querySelector('.videos-section') as HTMLElement;
+    if (seccionVideos) {
+      seccionVideos.style.display = 'none';
+    }
+
+    this.mostrandoVideos = false;
   }
 }

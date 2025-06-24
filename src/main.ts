@@ -1,6 +1,7 @@
 /**
  * Archivo principal de bootstrap para la aplicación Angular
  * The Last of Us Temporada 2 - Experiencia Web Inmersiva
+ * Ahora incluye la nueva sección de Videos
  */
 
 import { Component } from '@angular/core';
@@ -12,6 +13,7 @@ import { HeroComponent } from './components/hero/hero.component';
 import { PersonajesComponent } from './components/personajes/personajes.component';
 import { TimelineComponent } from './components/timeline/timeline.component';
 import { GaleriaComponent } from './components/galeria/galeria.component';
+import { VideosComponent } from './components/videos/videos.component';
 import { FooterComponent } from './components/footer/footer.component';
 
 /**
@@ -27,6 +29,7 @@ import { FooterComponent } from './components/footer/footer.component';
     PersonajesComponent,
     TimelineComponent,
     GaleriaComponent,
+    VideosComponent,
     FooterComponent
   ],
   template: `
@@ -43,11 +46,14 @@ import { FooterComponent } from './components/footer/footer.component';
         <!-- Sección de personajes -->
         <app-personajes></app-personajes>
         
-        <!-- Timeline de eventos -->
+        <!-- Timeline de eventos con reproductores de audio -->
         <app-timeline></app-timeline>
         
         <!-- Galería de imágenes -->
         <app-galeria></app-galeria>
+        
+        <!-- Sección de videos (inicialmente oculta) -->
+        <app-videos style="display: none;"></app-videos>
       </main>
       
       <!-- Pie de página -->
@@ -68,7 +74,7 @@ import { FooterComponent } from './components/footer/footer.component';
   `]
 })
 export class App {
-  title = 'The Last of Us Temporada 2';
+  title = 'The Last of Us Temporada 2 - Plataforma Multimedia';
 }
 
 // Bootstrap de la aplicación con animaciones habilitadas

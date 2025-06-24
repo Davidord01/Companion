@@ -1,16 +1,19 @@
 /**
  * Componente Timeline
  * Muestra la cronología de eventos principales de The Last of Us 2
+ * Ahora incluye reproductores de audio integrados
  */
 
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TimelineService, EventoTimeline } from '../../services/timeline.service';
+import { MultimediaService, ArchivoMultimedia } from '../../services/multimedia.service';
+import { ReproductorAudioComponent } from '../reproductor-audio/reproductor-audio.component';
 
 @Component({
   selector: 'app-timeline',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ReproductorAudioComponent],
   template: `
     <section class="timeline-section">
       <div class="container">
@@ -53,6 +56,20 @@ import { TimelineService, EventoTimeline } from '../../services/timeline.service
           >
             Eventos clave
           </button>
+        </div>
+
+        <!-- Sección de audio -->
+        <div class="audio-section fade-in-up" *ngIf="archivosAudio.length > 0">
+          <h3 class="audio-section-title">
+            <span class="audio-icon">🎵</span>
+            Archivos de Audio
+          </h3>
+          <div class="audio-grid">
+            <app-reproductor-audio 
+              *ngFor="let audio of archivosAudio"
+              [archivo]="audio"
+            ></app-reproductor-audio>
+          </div>
         </div>
 
         <!-- Timeline principal -->
@@ -200,11 +217,41 @@ import { TimelineService, EventoTimeline } from '../../services/timeline.service
       box-shadow: var(--sombra-media);
     }
 
+    .audio-section {
+      margin-bottom: var(--espaciado-xl);
+      padding: var(--espaciado-lg);
+      background: rgba(255, 107, 53, 0.05);
+      border-radius: 12px;
+      border: 1px solid var(--color-acento);
+    }
+
+    .audio-section-title {
+      color: var(--color-acento);
+      font-family: var(--fuente-titulo);
+      font-size: 1.5rem;
+      margin-bottom: var(--espaciado-md);
+      display: flex;
+      align-items: center;
+      gap: var(--espaciado-sm);
+      justify-content: center;
+    }
+
+    .audio-icon {
+      font-size: 1.8rem;
+      animation: pulso 2s ease-in-out infinite;
+    }
+
+    .audio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: var(--espaciado-md);
+    }
+
     .timeline-container {
       position: relative;
       max-width: 1000px;
       margin: 0 auto;
-      min-height: 500px; /* Altura mínima para asegurar que la línea sea visible */
+      min-height: 500px;
     }
 
     .timeline-line {
@@ -225,8 +272,8 @@ import { TimelineService, EventoTimeline } from '../../services/timeline.service
       display: flex;
       align-items: center;
       margin-bottom: var(--espaciado-xl);
-      opacity: 1; /* Cambiado de 0 a 1 para asegurar visibilidad */
-      transform: translateY(0); /* Cambiado para asegurar posición correcta */
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .timeline-item.reverse {
@@ -494,6 +541,10 @@ import { TimelineService, EventoTimeline } from '../../services/timeline.service
         padding: var(--espaciado-xs) var(--espaciado-sm);
         font-size: 0.8rem;
       }
+
+      .audio-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 480px) {
@@ -517,12 +568,17 @@ import { TimelineService, EventoTimeline } from '../../services/timeline.service
 export class TimelineComponent implements OnInit {
   eventos: EventoTimeline[] = [];
   eventosFiltrados: EventoTimeline[] = [];
+  archivosAudio: ArchivoMultimedia[] = [];
   filtroActivo: string = 'todos';
 
-  constructor(private timelineService: TimelineService) {}
+  constructor(
+    private timelineService: TimelineService,
+    private multimediaService: MultimediaService
+  ) {}
 
   ngOnInit() {
     this.cargarEventos();
+    this.cargarArchivosAudio();
   }
 
   /**
@@ -532,6 +588,15 @@ export class TimelineComponent implements OnInit {
     this.timelineService.obtenerEventos().subscribe(eventos => {
       this.eventos = eventos;
       this.eventosFiltrados = eventos;
+    });
+  }
+
+  /**
+   * Carga los archivos de audio
+   */
+  private cargarArchivosAudio() {
+    this.multimediaService.obtenerArchivosPorTipo('audio').subscribe(audios => {
+      this.archivosAudio = audios;
     });
   }
 
