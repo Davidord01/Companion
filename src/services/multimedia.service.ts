@@ -17,7 +17,7 @@ export interface ArchivoMultimedia {
   url: string;
   duracion?: number;
   fechaSubida: Date;
-  tamaño: number;
+  tamano: number;
   descripcion?: string;
   thumbnail?: string;
 }
@@ -68,7 +68,7 @@ export class MultimediaService {
         url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
         duracion: 180,
         fechaSubida: new Date('2024-01-15'),
-        tamaño: 5242880,
+        tamano: 5242880,
         descripcion: 'Música principal del juego compuesta por Gustavo Santaolalla'
       },
       {
@@ -79,7 +79,7 @@ export class MultimediaService {
         url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
         duracion: 120,
         fechaSubida: new Date('2024-01-20'),
-        tamaño: 3145728,
+        tamano: 3145728,
         descripcion: 'Conversación emotiva entre Ellie y Joel en Jackson'
       },
       {
@@ -90,7 +90,7 @@ export class MultimediaService {
         url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
         duracion: 300,
         fechaSubida: new Date('2024-01-10'),
-        tamaño: 52428800,
+        tamano: 52428800,
         descripcion: 'Trailer oficial revelando la historia de Ellie',
         thumbnail: 'https://images.pexels.com/photos/1413412/pexels-photo-1413412.jpeg'
       },
@@ -102,7 +102,7 @@ export class MultimediaService {
         url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
         duracion: 450,
         fechaSubida: new Date('2024-01-25'),
-        tamaño: 104857600,
+        tamano: 104857600,
         descripcion: 'Exploración de Seattle en busca de Abby',
         thumbnail: 'https://uploads.worldanvil.com/uploads/images/2b15c848c6f3e46aba209c5e36443d3a.jpg'
       }
@@ -173,7 +173,7 @@ export class MultimediaService {
             formato: '.' + archivo.name.split('.').pop()?.toLowerCase(),
             url: url,
             fechaSubida: new Date(),
-            tamaño: archivo.size,
+            tamano: archivo.size,
             descripcion: descripcion || '',
             thumbnail: tipo === 'video' ? 'https://images.pexels.com/photos/1413412/pexels-photo-1413412.jpeg' : undefined
           };
@@ -245,7 +245,7 @@ export class MultimediaService {
   /**
    * Formatea el tamaño del archivo
    */
-  formatearTamaño(bytes: number): string {
+  formatearTamano(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];

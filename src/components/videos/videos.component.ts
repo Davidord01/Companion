@@ -92,7 +92,7 @@ import { MultimediaService, ArchivoMultimedia } from '../../services/multimedia.
                 <strong>Duración:</strong> {{ formatearTiempo(videoSeleccionado.duracion || 0) }}
               </span>
               <span class="meta-item">
-                <strong>Tamaño:</strong> {{ formatearTamaño(videoSeleccionado.tamaño) }}
+                <strong>Tamaño:</strong> {{ formatearTamano(videoSeleccionado.tamano) }}
               </span>
               <span class="meta-item">
                 <strong>Subido:</strong> {{ videoSeleccionado.fechaSubida | date:'dd/MM/yyyy' }}
@@ -135,7 +135,7 @@ import { MultimediaService, ArchivoMultimedia } from '../../services/multimedia.
               </p>
               <div class="video-card-meta">
                 <span class="upload-date">{{ video.fechaSubida | date:'dd/MM/yyyy' }}</span>
-                <span class="file-size">{{ formatearTamaño(video.tamaño) }}</span>
+                <span class="file-size">{{ formatearTamano(video.tamano) }}</span>
               </div>
             </div>
 
@@ -721,7 +721,7 @@ export class VideosComponent implements OnInit {
   /**
    * Formatea el tamaño del archivo
    */
-  formatearTamaño(bytes: number): string {
-    return this.multimediaService.formatearTamaño(bytes);
+  formatearTamano(bytes: number): string {
+    return this.multimediaService.formatearTamano(bytes);
   }
 }
