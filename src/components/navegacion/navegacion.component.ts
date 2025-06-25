@@ -276,7 +276,6 @@ import { CommonModule } from '@angular/common';
 export class NavegacionComponent implements OnInit {
   isScrolled = false;
   isMenuOpen = false;
-  mostrandoVideos = false;
 
   ngOnInit() {
     // Inicializar estado de scroll
@@ -322,13 +321,7 @@ export class NavegacionComponent implements OnInit {
   navegarAVideos(event: Event) {
     event.preventDefault();
     this.isMenuOpen = false;
-    this.mostrarSeccionVideos();
-  }
-
-  /**
-   * Muestra la sección de videos
-   */
-  private mostrarSeccionVideos() {
+    
     // Ocultar todas las secciones principales
     const secciones = [
       '.hero-section',
@@ -344,24 +337,13 @@ export class NavegacionComponent implements OnInit {
       }
     });
 
-    // Mostrar o crear la sección de videos
-    let seccionVideos = document.querySelector('.videos-section') as HTMLElement;
-    
-    if (!seccionVideos) {
-      // Crear la sección de videos si no existe
-      seccionVideos = document.createElement('app-videos');
-      seccionVideos.className = 'videos-section';
-      
-      const mainContent = document.querySelector('.main-content');
-      if (mainContent) {
-        mainContent.appendChild(seccionVideos);
-      }
+    // Mostrar la sección de videos
+    const seccionVideos = document.querySelector('app-videos') as HTMLElement;
+    if (seccionVideos) {
+      seccionVideos.style.display = 'block';
     }
 
-    seccionVideos.style.display = 'block';
-    this.mostrandoVideos = true;
-
-    // Scroll suave al inicio
+    // Scroll al inicio
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
@@ -379,9 +361,25 @@ export class NavegacionComponent implements OnInit {
     // Cerrar menú móvil si está abierto
     this.isMenuOpen = false;
 
-    // Si estamos en la sección de videos, volver a mostrar las secciones principales
-    if (this.mostrandoVideos) {
-      this.mostrarSeccionesPrincipales();
+    // Mostrar todas las secciones principales y ocultar videos
+    const secciones = [
+      '.hero-section',
+      '.personajes-section', 
+      '.timeline-section',
+      '.galeria-section'
+    ];
+
+    secciones.forEach(selector => {
+      const elemento = document.querySelector(selector) as HTMLElement;
+      if (elemento) {
+        elemento.style.display = 'block';
+      }
+    });
+
+    // Ocultar la sección de videos
+    const seccionVideos = document.querySelector('app-videos') as HTMLElement;
+    if (seccionVideos) {
+      seccionVideos.style.display = 'none';
     }
 
     // Mapeo de IDs de sección a selectores
@@ -408,33 +406,5 @@ export class NavegacionComponent implements OnInit {
         }
       }, 100);
     }
-  }
-
-  /**
-   * Muestra las secciones principales y oculta la de videos
-   */
-  private mostrarSeccionesPrincipales() {
-    // Mostrar todas las secciones principales
-    const secciones = [
-      '.hero-section',
-      '.personajes-section', 
-      '.timeline-section',
-      '.galeria-section'
-    ];
-
-    secciones.forEach(selector => {
-      const elemento = document.querySelector(selector) as HTMLElement;
-      if (elemento) {
-        elemento.style.display = 'block';
-      }
-    });
-
-    // Ocultar la sección de videos
-    const seccionVideos = document.querySelector('.videos-section') as HTMLElement;
-    if (seccionVideos) {
-      seccionVideos.style.display = 'none';
-    }
-
-    this.mostrandoVideos = false;
   }
 }
