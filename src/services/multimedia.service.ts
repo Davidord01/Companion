@@ -60,28 +60,7 @@ export class MultimediaService {
    */
   private inicializarArchivosDemo() {
     const archivosDemo: ArchivoMultimedia[] = [
-      {
-        id: 'audio-1',
-        nombre: 'Tema Principal - The Last of Us 2',
-        tipo: 'audio',
-        formato: '.mp3',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
-        duracion: 180,
-        fechaSubida: new Date('2024-01-15'),
-        tamano: 5242880,
-        descripcion: 'Música principal del juego compuesta por Gustavo Santaolalla'
-      },
-      {
-        id: 'audio-2',
-        nombre: 'Diálogo - Ellie y Joel',
-        tipo: 'audio',
-        formato: '.mp3',
-        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
-        duracion: 120,
-        fechaSubida: new Date('2024-01-20'),
-        tamano: 3145728,
-        descripcion: 'Conversación emotiva entre Ellie y Joel en Jackson'
-      },
+      
       {
         id: 'video-1',
         nombre: 'Trailer Oficial - The Last of Us 2',
