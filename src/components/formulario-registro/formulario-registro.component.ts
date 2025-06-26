@@ -14,6 +14,7 @@ interface ErroresValidacion {
   email?: string;
   password?: string;
   pais?: string;
+  general?: string;
 }
 
 @Component({
@@ -72,6 +73,19 @@ interface ErroresValidacion {
             <div class="countdown-bar">
               <div class="countdown-progress" [style.width.%]="progresoCountdown"></div>
             </div>
+          </div>
+
+          <!-- Error general -->
+          <div class="general-error" *ngIf="errores.general && !enviandoFormulario && !operacionExitosa">
+            <div class="error-icon">⚠️</div>
+            <p>{{ errores.general }}</p>
+            <button 
+              class="btn btn-secundario btn-small"
+              *ngIf="modoActual === 'login'"
+              (click)="cambiarModo('registro')"
+            >
+              Crear cuenta nueva
+            </button>
           </div>
 
           <!-- Formulario de Login -->
@@ -469,6 +483,32 @@ interface ErroresValidacion {
       transition: width 0.1s linear;
     }
 
+    .general-error {
+      background: rgba(178, 34, 34, 0.1);
+      border: 1px solid var(--color-peligro);
+      border-radius: 8px;
+      padding: var(--espaciado-md);
+      margin-bottom: var(--espaciado-md);
+      text-align: center;
+      color: var(--color-texto-claro);
+    }
+
+    .error-icon {
+      font-size: 2rem;
+      margin-bottom: var(--espaciado-xs);
+    }
+
+    .general-error p {
+      margin: var(--espaciado-xs) 0;
+      color: #ffcccb;
+    }
+
+    .btn-small {
+      padding: var(--espaciado-xs) var(--espaciado-sm);
+      font-size: 0.9rem;
+      margin-top: var(--espaciado-sm);
+    }
+
     .auth-form {
       display: flex;
       flex-direction: column;
@@ -806,6 +846,7 @@ export class FormularioRegistroComponent implements OnInit {
     if (!this.validarLogin()) return;
 
     this.enviandoFormulario = true;
+    this.limpiarErrores();
 
     this.authService.iniciarSesion(this.datosLogin).subscribe({
       next: (exito) => {
@@ -820,11 +861,11 @@ export class FormularioRegistroComponent implements OnInit {
         this.enviandoFormulario = false;
         
         if (error === 'Usuario no encontrado') {
-          this.errores.email = 'Este email no está registrado';
+          this.errores.general = 'No encontramos una cuenta con este correo electrónico. ¿Necesitas crear una cuenta?';
         } else if (error === 'Contraseña incorrecta') {
-          this.errores.password = 'Contraseña incorrecta';
+          this.errores.password = 'La contraseña ingresada es incorrecta';
         } else {
-          this.errores.email = 'Error al iniciar sesión';
+          this.errores.general = 'Ocurrió un error al iniciar sesión. Por favor, intenta nuevamente.';
         }
       }
     });
@@ -837,6 +878,7 @@ export class FormularioRegistroComponent implements OnInit {
     if (!this.validarRegistro()) return;
 
     this.enviandoFormulario = true;
+    this.limpiarErrores();
 
     this.authService.registrarUsuario(this.datosRegistro).subscribe({
       next: (exito) => {
@@ -853,7 +895,7 @@ export class FormularioRegistroComponent implements OnInit {
         if (error === 'Este email ya está registrado') {
           this.errores.email = 'Este email ya está registrado. Intenta iniciar sesión.';
         } else {
-          this.errores.email = 'Error al registrar usuario';
+          this.errores.general = 'Ocurrió un error al registrar la cuenta. Por favor, intenta nuevamente.';
         }
       }
     });
