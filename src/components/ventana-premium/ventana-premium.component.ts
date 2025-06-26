@@ -792,7 +792,7 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy {
       {
         id: 'video3',
         titulo: 'Documental: La Creación de los Infectados',
-        descripción: 'Proceso completo de diseño y creación de los diferentes tipos de infectados.',
+        descripcion: 'Proceso completo de diseño y creación de los diferentes tipos de infectados.',
         tipo: 'video',
         url: 'https://images.pexels.com/photos/7991581/pexels-photo-7991581.jpeg',
         fechaLanzamiento: new Date('2024-02-15'),
