@@ -33,7 +33,7 @@ import { VentanaPremiumComponent } from '../ventana-premium/ventana-premium.comp
             <li><a href="#personajes" (click)="scrollToSection('personajes', $event)">Personajes</a></li>
             <li><a href="#timeline" (click)="scrollToSection('timeline', $event)">Historia</a></li>
             <li><a href="#galeria" (click)="scrollToSection('galeria', $event)">Galería</a></li>
-            <li><a href="#videos" (click)="navegarAVideos($event)" class="nav-videos">Videos</a></li>
+            
           </ul>
         </div>
 
