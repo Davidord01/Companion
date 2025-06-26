@@ -4,7 +4,7 @@
  * Ahora incluye la nueva sección de Videos y sistema de autenticación con ventana premium
  */
 
-import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { AuthService, Usuario } from '../../services/auth.service';
@@ -100,7 +100,11 @@ import { VentanaPremiumComponent } from '../ventana-premium/ventana-premium.comp
     ></app-formulario-registro>
 
     <!-- Ventana Premium -->
-    <app-ventana-premium></app-ventana-premium>
+    <app-ventana-premium
+      #ventanaPremium
+      [mostrarManualmente]="mostrarPremiumManual"
+      (cerrarVentana)="onCerrarVentanaPremium()"
+    ></app-ventana-premium>
   `,
   styles: [`
     .navbar {
@@ -495,9 +499,12 @@ import { VentanaPremiumComponent } from '../ventana-premium/ventana-premium.comp
   `]
 })
 export class NavegacionComponent implements OnInit, OnDestroy {
+  @ViewChild('ventanaPremium') ventanaPremium!: VentanaPremiumComponent;
+  
   isScrolled = false;
   isMenuOpen = false;
   mostrarFormularioRegistro = false;
+  mostrarPremiumManual = false;
   estaAutenticado = false;
   usuario: Usuario | null = null;
 
@@ -580,11 +587,20 @@ export class NavegacionComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Abre la ventana premium
+   * Abre la ventana premium manualmente
    */
   abrirVentanaPremium() {
-    // La ventana premium se abre automáticamente cuando el usuario está autenticado
-    // Este método puede usarse para forzar la apertura si es necesario
+    if (this.estaAutenticado) {
+      this.mostrarPremiumManual = true;
+      this.isMenuOpen = false;
+    }
+  }
+
+  /**
+   * Maneja el cierre de la ventana premium
+   */
+  onCerrarVentanaPremium() {
+    this.mostrarPremiumManual = false;
   }
 
   /**
@@ -592,7 +608,10 @@ export class NavegacionComponent implements OnInit, OnDestroy {
    */
   onRegistroCompletado() {
     this.cerrarFormularioRegistro();
-    // La ventana premium se abrirá automáticamente cuando cambie el estado de autenticación
+    // Esperar un momento para que se actualice el estado de autenticación
+    setTimeout(() => {
+      this.mostrarPremiumManual = true;
+    }, 500);
   }
 
   /**
@@ -601,6 +620,7 @@ export class NavegacionComponent implements OnInit, OnDestroy {
   cerrarSesion() {
     if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
       this.authService.cerrarSesion();
+      this.mostrarPremiumManual = false;
     }
   }
 

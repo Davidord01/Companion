@@ -3,7 +3,7 @@
  * Contenido exclusivo para usuarios autenticados
  */
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { AuthService, Usuario } from '../../services/auth.service';
@@ -704,7 +704,10 @@ interface ContenidoPremium {
     }
   `]
 })
-export class VentanaPremiumComponent implements OnInit, OnDestroy {
+export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() mostrarManualmente = false;
+  @Output() cerrarVentana = new EventEmitter<void>();
+
   mostrarVentana = false;
   usuario: Usuario | null = null;
   seccionActiva = 'exclusivos';
@@ -730,13 +733,26 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy {
         this.usuario = this.authService.usuarioActual;
         this.calcularEstadisticas();
         this.cargarContenidoPremium();
-        this.mostrarVentana = true;
-        document.body.style.overflow = 'hidden';
+        
+        // Solo mostrar automáticamente al registrarse, no al hacer login
+        if (!this.mostrarManualmente) {
+          setTimeout(() => {
+            this.mostrarVentana = true;
+            document.body.style.overflow = 'hidden';
+          }, 1000);
+        }
       } else {
         this.mostrarVentana = false;
         document.body.style.overflow = 'auto';
       }
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['mostrarManualmente'] && this.mostrarManualmente && this.authService.estaAutenticado) {
+      this.mostrarVentana = true;
+      document.body.style.overflow = 'hidden';
+    }
   }
 
   ngOnDestroy() {
@@ -882,12 +898,13 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy {
   /**
    * Cierra la ventana premium
    */
-  cerrarVentana(event?: Event) {
+  cerrarVentanaPremium(event?: Event) {
     if (event && event.target !== event.currentTarget) {
       return;
     }
     
     this.mostrarVentana = false;
     document.body.style.overflow = 'auto';
+    this.cerrarVentana.emit();
   }
 }
