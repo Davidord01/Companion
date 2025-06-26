@@ -1,16 +1,19 @@
 /**
  * Componente de navegación principal
  * Maneja la navegación suave entre secciones y efectos de scroll
- * Ahora incluye la nueva sección de Videos
+ * Ahora incluye la nueva sección de Videos y sistema de autenticación
  */
 
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
+import { AuthService, Usuario } from '../../services/auth.service';
+import { FormularioRegistroComponent } from '../formulario-registro/formulario-registro.component';
 
 @Component({
   selector: 'app-navegacion',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormularioRegistroComponent],
   template: `
     <nav class="navbar" [class.scrolled]="isScrolled">
       <div class="nav-container">
@@ -33,6 +36,38 @@ import { CommonModule } from '@angular/common';
           </ul>
         </div>
 
+        <!-- Sección de usuario -->
+        <div class="user-section">
+          <!-- Usuario no autenticado -->
+          <div class="auth-actions" *ngIf="!estaAutenticado">
+            <button 
+              class="btn-login"
+              (click)="abrirFormularioRegistro()"
+            >
+              <span class="login-icon">👤</span>
+              <span class="login-text">Iniciar Sesión</span>
+            </button>
+          </div>
+
+          <!-- Usuario autenticado -->
+          <div class="user-info" *ngIf="estaAutenticado && usuario">
+            <div class="user-avatar">
+              <span class="avatar-icon">🎮</span>
+            </div>
+            <div class="user-details">
+              <span class="user-name">{{ usuario.nombre }}</span>
+              <span class="user-status">Superviviente</span>
+            </div>
+            <button 
+              class="btn-logout"
+              (click)="cerrarSesion()"
+              title="Cerrar sesión"
+            >
+              <span>🚪</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Botón del menú móvil -->
         <button 
           class="nav-toggle"
@@ -46,6 +81,13 @@ import { CommonModule } from '@angular/common';
         </button>
       </div>
     </nav>
+
+    <!-- Modal de registro -->
+    <app-formulario-registro
+      *ngIf="mostrarFormularioRegistro"
+      (cerrar)="cerrarFormularioRegistro()"
+      (registroCompletado)="onRegistroCompletado()"
+    ></app-formulario-registro>
   `,
   styles: [`
     .navbar {
@@ -180,6 +222,97 @@ import { CommonModule } from '@angular/common';
       background: linear-gradient(135deg, #ff8c69, var(--color-acento)) !important;
     }
 
+    .user-section {
+      display: flex;
+      align-items: center;
+      gap: var(--espaciado-sm);
+    }
+
+    .btn-login {
+      display: flex;
+      align-items: center;
+      gap: var(--espaciado-xs);
+      padding: var(--espaciado-xs) var(--espaciado-md);
+      background: var(--gradiente-apocaliptico);
+      border: 2px solid var(--color-supervivencia);
+      border-radius: 25px;
+      color: var(--color-texto-claro);
+      font-family: var(--fuente-titulo);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all var(--transicion-media);
+    }
+
+    .btn-login:hover {
+      background: var(--color-supervivencia);
+      transform: translateY(-2px);
+      box-shadow: var(--sombra-media);
+    }
+
+    .login-icon {
+      font-size: 1.2rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: var(--espaciado-sm);
+      padding: var(--espaciado-xs) var(--espaciado-sm);
+      background: rgba(74, 93, 35, 0.2);
+      border: 1px solid var(--color-supervivencia);
+      border-radius: 25px;
+    }
+
+    .user-avatar {
+      width: 35px;
+      height: 35px;
+      background: var(--color-supervivencia);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-icon {
+      font-size: 1.2rem;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .user-name {
+      color: var(--color-texto-claro);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .user-status {
+      color: var(--color-supervivencia);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: none;
+      color: rgba(245, 245, 245, 0.7);
+      cursor: pointer;
+      padding: var(--espaciado-xs);
+      border-radius: 4px;
+      transition: all var(--transicion-rapida);
+    }
+
+    .btn-logout:hover {
+      color: var(--color-peligro);
+      background: rgba(178, 34, 34, 0.2);
+    }
+
     .nav-toggle {
       display: none;
       flex-direction: column;
@@ -260,6 +393,18 @@ import { CommonModule } from '@angular/common';
       .nav-videos {
         border-radius: 8px !important;
       }
+
+      .user-section {
+        order: -1;
+      }
+
+      .user-details {
+        display: none;
+      }
+
+      .user-info {
+        padding: var(--espaciado-xs);
+      }
     }
 
     @media (max-width: 480px) {
@@ -270,16 +415,53 @@ import { CommonModule } from '@angular/common';
       .navbar {
         padding: var(--espaciado-xs) 0;
       }
+
+      .login-text {
+        display: none;
+      }
+
+      .btn-login {
+        padding: var(--espaciado-xs);
+        border-radius: 50%;
+        min-width: 40px;
+        min-height: 40px;
+      }
     }
   `]
 })
-export class NavegacionComponent implements OnInit {
+export class NavegacionComponent implements OnInit, OnDestroy {
   isScrolled = false;
   isMenuOpen = false;
+  mostrarFormularioRegistro = false;
+  estaAutenticado = false;
+  usuario: Usuario | null = null;
+
+  private subscriptions: Subscription[] = [];
+
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    // Inicializar estado de scroll
     this.checkScrollPosition();
+    this.suscribirseAAuth();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  /**
+   * Suscribirse a los cambios de autenticación
+   */
+  private suscribirseAAuth() {
+    const authSub = this.authService.autenticado$.subscribe(
+      autenticado => this.estaAutenticado = autenticado
+    );
+
+    const userSub = this.authService.usuario$.subscribe(
+      usuario => this.usuario = usuario
+    );
+
+    this.subscriptions.push(authSub, userSub);
   }
 
   /**
@@ -313,6 +495,40 @@ export class NavegacionComponent implements OnInit {
    */
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  /**
+   * Abre el formulario de registro
+   */
+  abrirFormularioRegistro() {
+    this.mostrarFormularioRegistro = true;
+    this.isMenuOpen = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  /**
+   * Cierra el formulario de registro
+   */
+  cerrarFormularioRegistro() {
+    this.mostrarFormularioRegistro = false;
+    document.body.style.overflow = 'auto';
+  }
+
+  /**
+   * Maneja el evento de registro completado
+   */
+  onRegistroCompletado() {
+    // El formulario ya maneja la redirección automática
+    this.cerrarFormularioRegistro();
+  }
+
+  /**
+   * Cierra la sesión del usuario
+   */
+  cerrarSesion() {
+    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+      this.authService.cerrarSesion();
+    }
   }
 
   /**
