@@ -1,6 +1,6 @@
 /**
  * Servicio de autenticación
- * Maneja el registro y estado de usuario
+ * Maneja el registro, login y estado de usuario
  */
 
 import { Injectable } from '@angular/core';
@@ -12,6 +12,7 @@ export interface Usuario {
   email: string;
   pais: string;
   fechaRegistro: Date;
+  password?: string; // Solo para validación, no se almacena
 }
 
 export interface DatosRegistro {
@@ -19,6 +20,12 @@ export interface DatosRegistro {
   apellidos: string;
   email: string;
   pais: string;
+  password: string;
+}
+
+export interface DatosLogin {
+  email: string;
+  password: string;
 }
 
 @Injectable({
@@ -27,6 +34,7 @@ export interface DatosRegistro {
 export class AuthService {
   private usuarioSubject = new BehaviorSubject<Usuario | null>(null);
   private autenticadoSubject = new BehaviorSubject<boolean>(false);
+  private usuariosRegistrados = new Map<string, Usuario & { password: string }>();
 
   // Lista de países
   readonly paises = [
@@ -42,6 +50,7 @@ export class AuthService {
   constructor() {
     // Verificar si hay usuario guardado en localStorage
     this.cargarUsuarioGuardado();
+    this.cargarUsuariosRegistrados();
   }
 
   /**
@@ -77,23 +86,83 @@ export class AuthService {
    */
   registrarUsuario(datos: DatosRegistro): Observable<boolean> {
     return new Observable(observer => {
+      // Verificar si el email ya está registrado
+      if (this.usuariosRegistrados.has(datos.email)) {
+        observer.error('Este email ya está registrado');
+        return;
+      }
+
       // Simular delay de registro
       setTimeout(() => {
-        const nuevoUsuario: Usuario = {
+        const nuevoUsuario: Usuario & { password: string } = {
           ...datos,
           fechaRegistro: new Date()
         };
 
-        // Guardar en localStorage
-        localStorage.setItem('usuario_tlou', JSON.stringify(nuevoUsuario));
+        // Guardar en el mapa de usuarios registrados
+        this.usuariosRegistrados.set(datos.email, nuevoUsuario);
+        this.guardarUsuariosRegistrados();
+
+        // Autenticar automáticamente después del registro
+        const usuarioSinPassword: Usuario = {
+          nombre: nuevoUsuario.nombre,
+          apellidos: nuevoUsuario.apellidos,
+          email: nuevoUsuario.email,
+          pais: nuevoUsuario.pais,
+          fechaRegistro: nuevoUsuario.fechaRegistro
+        };
+
+        // Guardar sesión actual
+        localStorage.setItem('usuario_tlou', JSON.stringify(usuarioSinPassword));
         
         // Actualizar estado
-        this.usuarioSubject.next(nuevoUsuario);
+        this.usuarioSubject.next(usuarioSinPassword);
         this.autenticadoSubject.next(true);
 
         observer.next(true);
         observer.complete();
       }, 1000);
+    });
+  }
+
+  /**
+   * Inicia sesión con email y contraseña
+   */
+  iniciarSesion(datos: DatosLogin): Observable<boolean> {
+    return new Observable(observer => {
+      // Simular delay de login
+      setTimeout(() => {
+        const usuarioRegistrado = this.usuariosRegistrados.get(datos.email);
+        
+        if (!usuarioRegistrado) {
+          observer.error('Usuario no encontrado');
+          return;
+        }
+
+        if (usuarioRegistrado.password !== datos.password) {
+          observer.error('Contraseña incorrecta');
+          return;
+        }
+
+        // Login exitoso
+        const usuarioSinPassword: Usuario = {
+          nombre: usuarioRegistrado.nombre,
+          apellidos: usuarioRegistrado.apellidos,
+          email: usuarioRegistrado.email,
+          pais: usuarioRegistrado.pais,
+          fechaRegistro: usuarioRegistrado.fechaRegistro
+        };
+
+        // Guardar sesión actual
+        localStorage.setItem('usuario_tlou', JSON.stringify(usuarioSinPassword));
+        
+        // Actualizar estado
+        this.usuarioSubject.next(usuarioSinPassword);
+        this.autenticadoSubject.next(true);
+
+        observer.next(true);
+        observer.complete();
+      }, 800);
     });
   }
 
@@ -107,6 +176,13 @@ export class AuthService {
   }
 
   /**
+   * Verifica si un email está registrado
+   */
+  emailEstaRegistrado(email: string): boolean {
+    return this.usuariosRegistrados.has(email);
+  }
+
+  /**
    * Carga el usuario guardado desde localStorage
    */
   private cargarUsuarioGuardado(): void {
@@ -114,6 +190,8 @@ export class AuthService {
     if (usuarioGuardado) {
       try {
         const usuario = JSON.parse(usuarioGuardado);
+        // Convertir fecha de string a Date
+        usuario.fechaRegistro = new Date(usuario.fechaRegistro);
         this.usuarioSubject.next(usuario);
         this.autenticadoSubject.next(true);
       } catch (error) {
@@ -124,10 +202,73 @@ export class AuthService {
   }
 
   /**
+   * Carga usuarios registrados desde localStorage
+   */
+  private cargarUsuariosRegistrados(): void {
+    const usuariosGuardados = localStorage.getItem('usuarios_registrados_tlou');
+    if (usuariosGuardados) {
+      try {
+        const usuarios = JSON.parse(usuariosGuardados);
+        Object.entries(usuarios).forEach(([email, usuario]: [string, any]) => {
+          // Convertir fecha de string a Date
+          usuario.fechaRegistro = new Date(usuario.fechaRegistro);
+          this.usuariosRegistrados.set(email, usuario);
+        });
+      } catch (error) {
+        console.error('Error al cargar usuarios registrados:', error);
+        localStorage.removeItem('usuarios_registrados_tlou');
+      }
+    }
+  }
+
+  /**
+   * Guarda usuarios registrados en localStorage
+   */
+  private guardarUsuariosRegistrados(): void {
+    try {
+      const usuarios: { [key: string]: any } = {};
+      this.usuariosRegistrados.forEach((usuario, email) => {
+        usuarios[email] = usuario;
+      });
+      localStorage.setItem('usuarios_registrados_tlou', JSON.stringify(usuarios));
+    } catch (error) {
+      console.error('Error al guardar usuarios registrados:', error);
+    }
+  }
+
+  /**
    * Valida formato de email
    */
   validarEmail(email: string): boolean {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
+  }
+
+  /**
+   * Valida fortaleza de contraseña
+   */
+  validarPassword(password: string): { valida: boolean; errores: string[] } {
+    const errores: string[] = [];
+    
+    if (password.length < 6) {
+      errores.push('Debe tener al menos 6 caracteres');
+    }
+    
+    if (!/[A-Z]/.test(password)) {
+      errores.push('Debe contener al menos una mayúscula');
+    }
+    
+    if (!/[a-z]/.test(password)) {
+      errores.push('Debe contener al menos una minúscula');
+    }
+    
+    if (!/[0-9]/.test(password)) {
+      errores.push('Debe contener al menos un número');
+    }
+
+    return {
+      valida: errores.length === 0,
+      errores
+    };
   }
 }

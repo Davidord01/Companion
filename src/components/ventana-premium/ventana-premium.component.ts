@@ -1,12 +1,15 @@
 /**
  * Componente Ventana Premium
- * Contenido exclusivo para usuarios autenticados
+ * Contenido exclusivo para usuarios autenticados con chat, mapa y mensajería
  */
 
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { AuthService, Usuario } from '../../services/auth.service';
+import { ChatPremiumComponent } from '../chat-premium/chat-premium.component';
+import { MapaPremiumComponent } from '../mapa-premium/mapa-premium.component';
+import { MensajeriaPremiumComponent } from '../mensajeria-premium/mensajeria-premium.component';
 
 interface ContenidoPremium {
   id: string;
@@ -21,7 +24,7 @@ interface ContenidoPremium {
 @Component({
   selector: 'app-ventana-premium',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ChatPremiumComponent, MapaPremiumComponent, MensajeriaPremiumComponent],
   template: `
     <div class="premium-overlay" [class.visible]="mostrarVentana" (click)="cerrarVentanaPremium($event)">
       <div class="premium-container">
@@ -50,6 +53,27 @@ interface ContenidoPremium {
         <div class="premium-nav">
           <button 
             class="nav-tab"
+            [class.active]="seccionActiva === 'chat'"
+            (click)="cambiarSeccion('chat')"
+          >
+            💬 Chat de Supervivientes
+          </button>
+          <button 
+            class="nav-tab"
+            [class.active]="seccionActiva === 'mapa'"
+            (click)="cambiarSeccion('mapa')"
+          >
+            🗺️ Mapa y Consejos
+          </button>
+          <button 
+            class="nav-tab"
+            [class.active]="seccionActiva === 'mensajeria'"
+            (click)="cambiarSeccion('mensajeria')"
+          >
+            📧 Mensajes Admin
+          </button>
+          <button 
+            class="nav-tab"
             [class.active]="seccionActiva === 'exclusivos'"
             (click)="cambiarSeccion('exclusivos')"
           >
@@ -62,25 +86,44 @@ interface ContenidoPremium {
           >
             🎭 Behind the Scenes
           </button>
-          <button 
-            class="nav-tab"
-            [class.active]="seccionActiva === 'conceptos'"
-            (click)="cambiarSeccion('conceptos')"
-          >
-            🎨 Arte Conceptual
-          </button>
-          <button 
-            class="nav-tab"
-            [class.active]="seccionActiva === 'soundtrack'"
-            (click)="cambiarSeccion('soundtrack')"
-          >
-            🎵 Soundtrack Exclusivo
-          </button>
         </div>
 
         <!-- Contenido por secciones -->
         <div class="premium-content">
           
+          <!-- Chat de Supervivientes -->
+          <div class="content-section" *ngIf="seccionActiva === 'chat'">
+            <div class="section-intro">
+              <h3 class="section-title">💬 Chat de Supervivientes</h3>
+              <p class="section-description">
+                Conecta con otros supervivientes, comparte estrategias y mantente informado sobre las últimas amenazas en tiempo real.
+              </p>
+            </div>
+            <app-chat-premium></app-chat-premium>
+          </div>
+
+          <!-- Mapa y Consejos -->
+          <div class="content-section" *ngIf="seccionActiva === 'mapa'">
+            <div class="section-intro">
+              <h3 class="section-title">🗺️ Mapa de Supervivencia</h3>
+              <p class="section-description">
+                Explora ubicaciones secretas, encuentra tesoros ocultos y aprende consejos de supervivencia de expertos.
+              </p>
+            </div>
+            <app-mapa-premium></app-mapa-premium>
+          </div>
+
+          <!-- Mensajería con Admin -->
+          <div class="content-section" *ngIf="seccionActiva === 'mensajeria'">
+            <div class="section-intro">
+              <h3 class="section-title">📧 Centro de Mensajería</h3>
+              <p class="section-description">
+                Envía comentarios, reporta problemas o solicita ayuda directamente al equipo de administración.
+              </p>
+            </div>
+            <app-mensajeria-premium></app-mensajeria-premium>
+          </div>
+
           <!-- Videos Exclusivos -->
           <div class="content-section" *ngIf="seccionActiva === 'exclusivos'">
             <h3 class="section-title">Videos Exclusivos</h3>
@@ -124,42 +167,6 @@ interface ContenidoPremium {
               </div>
             </div>
           </div>
-
-          <!-- Arte Conceptual -->
-          <div class="content-section" *ngIf="seccionActiva === 'conceptos'">
-            <h3 class="section-title">Arte Conceptual Exclusivo</h3>
-            <div class="art-gallery">
-              <div class="art-item" *ngFor="let arte of arteConceptual">
-                <img [src]="arte.url" [alt]="arte.titulo">
-                <div class="art-overlay">
-                  <h4>{{ arte.titulo }}</h4>
-                  <p>{{ arte.descripcion }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Soundtrack Exclusivo -->
-          <div class="content-section" *ngIf="seccionActiva === 'soundtrack'">
-            <h3 class="section-title">Soundtrack Exclusivo</h3>
-            <div class="music-player">
-              <div class="track-list">
-                <div class="track-item" *ngFor="let track of soundtrackExclusivo; let i = index">
-                  <div class="track-info">
-                    <span class="track-number">{{ i + 1 }}</span>
-                    <div class="track-details">
-                      <h4>{{ track.titulo }}</h4>
-                      <p>{{ track.descripcion }}</p>
-                    </div>
-                  </div>
-                  <button class="play-track-btn" (click)="reproducirTrack(track)">
-                    <span *ngIf="trackActual?.id !== track.id">▶️</span>
-                    <span *ngIf="trackActual?.id === track.id">⏸️</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Estadísticas del usuario -->
@@ -174,10 +181,17 @@ interface ContenidoPremium {
               </div>
             </div>
             <div class="stat-card">
-              <span class="stat-icon">🎬</span>
+              <span class="stat-icon">💬</span>
               <div class="stat-info">
-                <span class="stat-value">{{ contenidoVisto }}</span>
-                <span class="stat-label">Contenido exclusivo visto</span>
+                <span class="stat-value">{{ mensajesEnviados }}</span>
+                <span class="stat-label">Mensajes en chat</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-icon">🗺️</span>
+              <div class="stat-info">
+                <span class="stat-value">{{ ubicacionesExploradas }}</span>
+                <span class="stat-label">Ubicaciones exploradas</span>
               </div>
             </div>
             <div class="stat-card">
@@ -230,7 +244,7 @@ interface ContenidoPremium {
       background: linear-gradient(135deg, var(--color-fondo-medio), var(--color-fondo-oscuro));
       border-radius: 20px;
       width: 100%;
-      max-width: 900px;
+      max-width: 1200px;
       max-height: 90vh;
       overflow-y: auto;
       border: 3px solid var(--color-acento);
@@ -309,6 +323,8 @@ interface ContenidoPremium {
       gap: var(--espaciado-xs);
       padding: var(--espaciado-md);
       flex-wrap: wrap;
+      background: var(--color-fondo-oscuro);
+      border-bottom: 1px solid var(--color-acento);
     }
 
     .nav-tab {
@@ -321,6 +337,7 @@ interface ContenidoPremium {
       cursor: pointer;
       transition: all var(--transicion-media);
       white-space: nowrap;
+      font-size: 0.9rem;
     }
 
     .nav-tab:hover,
@@ -332,15 +349,30 @@ interface ContenidoPremium {
 
     .premium-content {
       padding: var(--espaciado-md);
-      min-height: 300px;
+      min-height: 400px;
+    }
+
+    .content-section {
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    .section-intro {
+      margin-bottom: var(--espaciado-md);
+      text-align: center;
     }
 
     .section-title {
       color: var(--color-acento);
       font-family: var(--fuente-titulo);
       font-size: 1.5rem;
-      margin-bottom: var(--espaciado-md);
-      text-align: center;
+      margin-bottom: var(--espaciado-sm);
+    }
+
+    .section-description {
+      color: rgba(245, 245, 245, 0.8);
+      line-height: 1.6;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
     .content-grid {
@@ -480,117 +512,6 @@ interface ContenidoPremium {
       transform: translateY(-2px);
     }
 
-    .art-gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--espaciado-sm);
-    }
-
-    .art-item {
-      position: relative;
-      height: 200px;
-      border-radius: 8px;
-      overflow: hidden;
-      cursor: pointer;
-    }
-
-    .art-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform var(--transicion-lenta);
-    }
-
-    .art-item:hover img {
-      transform: scale(1.1);
-    }
-
-    .art-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
-      padding: var(--espaciado-sm);
-      color: var(--color-texto-claro);
-      transform: translateY(100%);
-      transition: transform var(--transicion-media);
-    }
-
-    .art-item:hover .art-overlay {
-      transform: translateY(0);
-    }
-
-    .music-player {
-      background: var(--color-fondo-oscuro);
-      border-radius: 12px;
-      padding: var(--espaciado-md);
-      border: 1px solid var(--color-acento);
-    }
-
-    .track-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--espaciado-sm);
-    }
-
-    .track-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: var(--espaciado-sm);
-      background: rgba(255, 107, 53, 0.1);
-      border-radius: 8px;
-      transition: all var(--transicion-rapida);
-    }
-
-    .track-item:hover {
-      background: rgba(255, 107, 53, 0.2);
-    }
-
-    .track-info {
-      display: flex;
-      align-items: center;
-      gap: var(--espaciado-sm);
-      flex: 1;
-    }
-
-    .track-number {
-      color: var(--color-acento);
-      font-weight: 700;
-      font-family: var(--fuente-titulo);
-      min-width: 30px;
-    }
-
-    .track-details h4 {
-      color: var(--color-texto-claro);
-      margin-bottom: 2px;
-    }
-
-    .track-details p {
-      color: rgba(245, 245, 245, 0.7);
-      font-size: 0.9rem;
-      margin: 0;
-    }
-
-    .play-track-btn {
-      background: var(--color-acento);
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all var(--transicion-rapida);
-    }
-
-    .play-track-btn:hover {
-      background: #ff8c69;
-      transform: scale(1.1);
-    }
-
     .user-stats {
       margin: var(--espaciado-lg) var(--espaciado-md) var(--espaciado-md);
       padding: var(--espaciado-md);
@@ -686,6 +607,7 @@ interface ContenidoPremium {
 
       .nav-tab {
         width: 200px;
+        text-align: center;
       }
 
       .behind-item {
@@ -699,7 +621,26 @@ interface ContenidoPremium {
       }
 
       .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .welcome-title {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
         grid-template-columns: 1fr;
+      }
+
+      .premium-nav {
+        padding: var(--espaciado-sm);
+      }
+
+      .nav-tab {
+        width: 100%;
+        font-size: 0.8rem;
       }
     }
   `]
@@ -710,18 +651,16 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
 
   mostrarVentana = false;
   usuario: Usuario | null = null;
-  seccionActiva = 'exclusivos';
+  seccionActiva = 'chat';
   
   // Datos del usuario
   diasRegistrado = 0;
-  contenidoVisto = 0;
+  mensajesEnviados = 0;
+  ubicacionesExploradas = 0;
   nivelSuperviviencia = 'Novato';
   
   // Contenido premium
   videosExclusivos: ContenidoPremium[] = [];
-  arteConceptual: ContenidoPremium[] = [];
-  soundtrackExclusivo: ContenidoPremium[] = [];
-  trackActual: ContenidoPremium | null = null;
   
   private subscription?: Subscription;
 
@@ -769,8 +708,9 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
       const ahora = new Date();
       this.diasRegistrado = Math.floor((ahora.getTime() - fechaRegistro.getTime()) / (1000 * 60 * 60 * 24));
       
-      // Simular contenido visto y nivel
-      this.contenidoVisto = Math.floor(Math.random() * 15) + 1;
+      // Simular estadísticas
+      this.mensajesEnviados = Math.floor(Math.random() * 50) + 1;
+      this.ubicacionesExploradas = Math.floor(Math.random() * 10) + 1;
       
       if (this.diasRegistrado < 7) {
         this.nivelSuperviviencia = 'Novato';
@@ -815,66 +755,6 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
         exclusivo: true
       }
     ];
-
-    this.arteConceptual = [
-      {
-        id: 'art1',
-        titulo: 'Jackson en Invierno - Concept Art',
-        descripcion: 'Arte conceptual original de la comunidad de Jackson durante el invierno.',
-        tipo: 'imagen',
-        url: 'https://images.pexels.com/photos/1413412/pexels-photo-1413412.jpeg',
-        fechaLanzamiento: new Date('2024-01-01'),
-        exclusivo: true
-      },
-      {
-        id: 'art2',
-        titulo: 'Diseños de Personajes - Abby Anderson',
-        descripcion: 'Evolución del diseño del personaje de Abby desde los primeros bocetos.',
-        tipo: 'imagen',
-        url: 'https://images.pexels.com/photos/7991582/pexels-photo-7991582.jpeg',
-        fechaLanzamiento: new Date('2024-01-10'),
-        exclusivo: true
-      },
-      {
-        id: 'art3',
-        titulo: 'Seattle Post-Apocalíptico',
-        descripcion: 'Visión artística de Seattle reclamada por la naturaleza.',
-        tipo: 'imagen',
-        url: 'https://images.pexels.com/photos/7991583/pexels-photo-7991583.jpeg',
-        fechaLanzamiento: new Date('2024-01-20'),
-        exclusivo: true
-      }
-    ];
-
-    this.soundtrackExclusivo = [
-      {
-        id: 'track1',
-        titulo: 'Ellie\'s Lament (Extended Version)',
-        descripcion: 'Versión extendida de la emotiva pieza musical de Ellie.',
-        tipo: 'audio',
-        url: '#',
-        fechaLanzamiento: new Date('2024-01-05'),
-        exclusivo: true
-      },
-      {
-        id: 'track2',
-        titulo: 'The Last Dance (Unreleased)',
-        descripcion: 'Tema musical inédito compuesto para una escena eliminada.',
-        tipo: 'audio',
-        url: '#',
-        fechaLanzamiento: new Date('2024-01-12'),
-        exclusivo: true
-      },
-      {
-        id: 'track3',
-        titulo: 'Infected Whispers (Ambient)',
-        descripcion: 'Sonidos ambientales utilizados en las secuencias de terror.',
-        tipo: 'audio',
-        url: '#',
-        fechaLanzamiento: new Date('2024-01-25'),
-        exclusivo: true
-      }
-    ];
   }
 
   /**
@@ -882,17 +762,6 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
    */
   cambiarSeccion(seccion: string) {
     this.seccionActiva = seccion;
-  }
-
-  /**
-   * Reproduce un track de audio
-   */
-  reproducirTrack(track: ContenidoPremium) {
-    if (this.trackActual?.id === track.id) {
-      this.trackActual = null;
-    } else {
-      this.trackActual = track;
-    }
   }
 
   /**

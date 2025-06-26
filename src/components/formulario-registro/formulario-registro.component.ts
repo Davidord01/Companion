@@ -1,17 +1,18 @@
 /**
- * Componente Formulario de Registro
- * Modal para registro de nuevos usuarios
+ * Componente Formulario de Registro/Login
+ * Modal para registro de nuevos usuarios y login
  */
 
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService, DatosRegistro } from '../../services/auth.service';
+import { AuthService, DatosRegistro, DatosLogin } from '../../services/auth.service';
 
 interface ErroresValidacion {
   nombre?: string;
   apellidos?: string;
   email?: string;
+  password?: string;
   pais?: string;
 }
 
@@ -26,7 +27,7 @@ interface ErroresValidacion {
         <div class="modal-header">
           <h2 class="modal-title">
             <span class="title-icon">🧟</span>
-            Únete a los Supervivientes
+            {{ modoActual === 'registro' ? 'Únete a los Supervivientes' : 'Bienvenido de Vuelta' }}
           </h2>
           <button 
             class="btn-cerrar"
@@ -37,35 +38,133 @@ interface ErroresValidacion {
           </button>
         </div>
 
-        <!-- Contenido del formulario -->
-        <div class="modal-body">
-          <p class="modal-description">
-            Regístrate para acceder a contenido exclusivo del mundo post-apocalíptico de The Last of Us.
-          </p>
+        <!-- Navegación entre modos -->
+        <div class="modo-navegacion">
+          <button 
+            class="modo-btn"
+            [class.active]="modoActual === 'login'"
+            (click)="cambiarModo('login')"
+          >
+            Iniciar Sesión
+          </button>
+          <button 
+            class="modo-btn"
+            [class.active]="modoActual === 'registro'"
+            (click)="cambiarModo('registro')"
+          >
+            Registrarse
+          </button>
+        </div>
 
+        <!-- Contenido del modal -->
+        <div class="modal-body">
           <!-- Estado de carga -->
           <div class="loading-state" *ngIf="enviandoFormulario">
             <div class="loading-spinner"></div>
-            <p>Procesando registro...</p>
+            <p>{{ modoActual === 'registro' ? 'Procesando registro...' : 'Iniciando sesión...' }}</p>
           </div>
 
           <!-- Mensaje de éxito -->
-          <div class="success-message" *ngIf="registroExitoso">
+          <div class="success-message" *ngIf="operacionExitosa">
             <div class="success-icon">✅</div>
-            <h3>¡Gracias por registrarte en este mundo post-apocalíptico!</h3>
+            <h3>{{ modoActual === 'registro' ? '¡Bienvenido al mundo post-apocalíptico!' : '¡Bienvenido de vuelta, superviviente!' }}</h3>
             <p>Redirigiendo en {{ tiempoRestante }} segundos...</p>
             <div class="countdown-bar">
               <div class="countdown-progress" [style.width.%]="progresoCountdown"></div>
             </div>
           </div>
 
-          <!-- Formulario de registro -->
+          <!-- Formulario de Login -->
           <form 
-            class="registro-form"
-            *ngIf="!enviandoFormulario && !registroExitoso"
-            (ngSubmit)="enviarFormulario()"
-            #formulario="ngForm"
+            class="auth-form"
+            *ngIf="!enviandoFormulario && !operacionExitosa && modoActual === 'login'"
+            (ngSubmit)="iniciarSesion()"
+            #loginForm="ngForm"
           >
+            <p class="form-description">
+              Ingresa tus credenciales para acceder a tu cuenta de superviviente.
+            </p>
+
+            <!-- Campo Email -->
+            <div class="form-group">
+              <label for="loginEmail" class="form-label">
+                Correo Electrónico *
+              </label>
+              <input
+                type="email"
+                id="loginEmail"
+                name="loginEmail"
+                class="form-input"
+                [class.error]="errores.email"
+                [(ngModel)]="datosLogin.email"
+                placeholder="ejemplo@correo.com"
+                required
+              >
+              <div class="error-message" *ngIf="errores.email">
+                {{ errores.email }}
+              </div>
+            </div>
+
+            <!-- Campo Password -->
+            <div class="form-group">
+              <label for="loginPassword" class="form-label">
+                Contraseña *
+              </label>
+              <div class="password-container">
+                <input
+                  [type]="mostrarPassword ? 'text' : 'password'"
+                  id="loginPassword"
+                  name="loginPassword"
+                  class="form-input"
+                  [class.error]="errores.password"
+                  [(ngModel)]="datosLogin.password"
+                  placeholder="Tu contraseña"
+                  required
+                >
+                <button 
+                  type="button"
+                  class="toggle-password"
+                  (click)="togglePassword()"
+                >
+                  {{ mostrarPassword ? '🙈' : '👁️' }}
+                </button>
+              </div>
+              <div class="error-message" *ngIf="errores.password">
+                {{ errores.password }}
+              </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="form-actions">
+              <button 
+                type="button"
+                class="btn btn-secundario"
+                (click)="cerrarModal()"
+              >
+                Cancelar
+              </button>
+              <button 
+                type="submit"
+                class="btn btn-primario"
+                [disabled]="!loginValido()"
+              >
+                <span class="btn-icon">🚪</span>
+                Iniciar Sesión
+              </button>
+            </div>
+          </form>
+
+          <!-- Formulario de Registro -->
+          <form 
+            class="auth-form"
+            *ngIf="!enviandoFormulario && !operacionExitosa && modoActual === 'registro'"
+            (ngSubmit)="registrarUsuario()"
+            #registroForm="ngForm"
+          >
+            <p class="form-description">
+              Regístrate para acceder a contenido exclusivo del mundo post-apocalíptico de The Last of Us.
+            </p>
+
             <!-- Campo Nombre -->
             <div class="form-group">
               <label for="nombre" class="form-label">
@@ -77,7 +176,7 @@ interface ErroresValidacion {
                 name="nombre"
                 class="form-input"
                 [class.error]="errores.nombre"
-                [(ngModel)]="datosFormulario.nombre"
+                [(ngModel)]="datosRegistro.nombre"
                 placeholder="Ingresa tu nombre"
                 required
               >
@@ -97,7 +196,7 @@ interface ErroresValidacion {
                 name="apellidos"
                 class="form-input"
                 [class.error]="errores.apellidos"
-                [(ngModel)]="datosFormulario.apellidos"
+                [(ngModel)]="datosRegistro.apellidos"
                 placeholder="Ingresa tus apellidos"
                 required
               >
@@ -117,12 +216,51 @@ interface ErroresValidacion {
                 name="email"
                 class="form-input"
                 [class.error]="errores.email"
-                [(ngModel)]="datosFormulario.email"
+                [(ngModel)]="datosRegistro.email"
                 placeholder="ejemplo@correo.com"
                 required
               >
               <div class="error-message" *ngIf="errores.email">
                 {{ errores.email }}
+              </div>
+            </div>
+
+            <!-- Campo Password -->
+            <div class="form-group">
+              <label for="password" class="form-label">
+                Contraseña *
+              </label>
+              <div class="password-container">
+                <input
+                  [type]="mostrarPassword ? 'text' : 'password'"
+                  id="password"
+                  name="password"
+                  class="form-input"
+                  [class.error]="errores.password"
+                  [(ngModel)]="datosRegistro.password"
+                  placeholder="Crea una contraseña segura"
+                  required
+                >
+                <button 
+                  type="button"
+                  class="toggle-password"
+                  (click)="togglePassword()"
+                >
+                  {{ mostrarPassword ? '🙈' : '👁️' }}
+                </button>
+              </div>
+              <div class="password-strength" *ngIf="datosRegistro.password">
+                <div class="strength-bar">
+                  <div 
+                    class="strength-fill"
+                    [style.width.%]="passwordStrength.porcentaje"
+                    [class]="'strength-' + passwordStrength.nivel"
+                  ></div>
+                </div>
+                <span class="strength-text">{{ passwordStrength.texto }}</span>
+              </div>
+              <div class="error-message" *ngIf="errores.password">
+                {{ errores.password }}
               </div>
             </div>
 
@@ -136,7 +274,7 @@ interface ErroresValidacion {
                 name="pais"
                 class="form-select"
                 [class.error]="errores.pais"
-                [(ngModel)]="datosFormulario.pais"
+                [(ngModel)]="datosRegistro.pais"
                 required
               >
                 <option value="">Selecciona tu país</option>
@@ -164,7 +302,7 @@ interface ErroresValidacion {
               <button 
                 type="submit"
                 class="btn btn-primario"
-                [disabled]="!formularioValido()"
+                [disabled]="!registroValido()"
               >
                 <span class="btn-icon">🎮</span>
                 Registrarse
@@ -248,11 +386,36 @@ interface ErroresValidacion {
       transform: scale(1.1);
     }
 
+    .modo-navegacion {
+      display: flex;
+      background: var(--color-fondo-oscuro);
+      border-bottom: 1px solid var(--color-acento);
+    }
+
+    .modo-btn {
+      flex: 1;
+      padding: var(--espaciado-sm);
+      background: transparent;
+      border: none;
+      color: rgba(245, 245, 245, 0.7);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transicion-rapida);
+      border-bottom: 3px solid transparent;
+    }
+
+    .modo-btn:hover,
+    .modo-btn.active {
+      color: var(--color-acento);
+      border-bottom-color: var(--color-acento);
+      background: rgba(255, 107, 53, 0.1);
+    }
+
     .modal-body {
       padding: var(--espaciado-md);
     }
 
-    .modal-description {
+    .form-description {
       color: rgba(245, 245, 245, 0.8);
       text-align: center;
       margin-bottom: var(--espaciado-md);
@@ -306,7 +469,7 @@ interface ErroresValidacion {
       transition: width 0.1s linear;
     }
 
-    .registro-form {
+    .auth-form {
       display: flex;
       flex-direction: column;
       gap: var(--espaciado-md);
@@ -348,6 +511,62 @@ interface ErroresValidacion {
     .form-select.error {
       border-color: var(--color-peligro);
       box-shadow: 0 0 10px rgba(178, 34, 34, 0.3);
+    }
+
+    .password-container {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: var(--espaciado-sm);
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(245, 245, 245, 0.7);
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: color var(--transicion-rapida);
+    }
+
+    .toggle-password:hover {
+      color: var(--color-acento);
+    }
+
+    .password-strength {
+      margin-top: var(--espaciado-xs);
+    }
+
+    .strength-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(245, 245, 245, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: var(--espaciado-xs);
+    }
+
+    .strength-fill {
+      height: 100%;
+      transition: all var(--transicion-media);
+    }
+
+    .strength-fill.strength-debil {
+      background: var(--color-peligro);
+    }
+
+    .strength-fill.strength-media {
+      background: var(--color-acento);
+    }
+
+    .strength-fill.strength-fuerte {
+      background: var(--color-supervivencia);
+    }
+
+    .strength-text {
+      font-size: 0.8rem;
+      color: rgba(245, 245, 245, 0.7);
     }
 
     .form-select {
@@ -483,19 +702,28 @@ export class FormularioRegistroComponent implements OnInit {
   @Output() cerrar = new EventEmitter<void>();
   @Output() registroCompletado = new EventEmitter<void>();
 
-  datosFormulario: DatosRegistro = {
+  modoActual: 'login' | 'registro' = 'login';
+  
+  datosRegistro: DatosRegistro = {
     nombre: '',
     apellidos: '',
     email: '',
-    pais: ''
+    pais: '',
+    password: ''
+  };
+
+  datosLogin: DatosLogin = {
+    email: '',
+    password: ''
   };
 
   errores: ErroresValidacion = {};
   enviandoFormulario = false;
-  registroExitoso = false;
+  operacionExitosa = false;
   tiempoRestante = 3;
   progresoCountdown = 100;
   paises: string[] = [];
+  mostrarPassword = false;
 
   constructor(private authService: AuthService) {}
 
@@ -504,55 +732,150 @@ export class FormularioRegistroComponent implements OnInit {
   }
 
   /**
-   * Valida el formulario completo
+   * Cambia entre modo login y registro
    */
-  formularioValido(): boolean {
+  cambiarModo(modo: 'login' | 'registro') {
+    this.modoActual = modo;
+    this.limpiarErrores();
+  }
+
+  /**
+   * Toggle visibilidad de contraseña
+   */
+  togglePassword() {
+    this.mostrarPassword = !this.mostrarPassword;
+  }
+
+  /**
+   * Calcula la fortaleza de la contraseña
+   */
+  get passwordStrength() {
+    const password = this.datosRegistro.password;
+    if (!password) return { porcentaje: 0, nivel: 'debil', texto: '' };
+
+    let puntos = 0;
+    if (password.length >= 6) puntos += 25;
+    if (/[A-Z]/.test(password)) puntos += 25;
+    if (/[a-z]/.test(password)) puntos += 25;
+    if (/[0-9]/.test(password)) puntos += 25;
+
+    let nivel = 'debil';
+    let texto = 'Débil';
+    
+    if (puntos >= 75) {
+      nivel = 'fuerte';
+      texto = 'Fuerte';
+    } else if (puntos >= 50) {
+      nivel = 'media';
+      texto = 'Media';
+    }
+
+    return { porcentaje: puntos, nivel, texto };
+  }
+
+  /**
+   * Valida el formulario de login
+   */
+  loginValido(): boolean {
     return !!(
-      this.datosFormulario.nombre.trim() &&
-      this.datosFormulario.apellidos.trim() &&
-      this.datosFormulario.email.trim() &&
-      this.datosFormulario.pais &&
-      this.authService.validarEmail(this.datosFormulario.email)
+      this.datosLogin.email.trim() &&
+      this.datosLogin.password.trim() &&
+      this.authService.validarEmail(this.datosLogin.email)
     );
   }
 
   /**
-   * Valida los campos del formulario
+   * Valida el formulario de registro
    */
-  private validarFormulario(): boolean {
+  registroValido(): boolean {
+    return !!(
+      this.datosRegistro.nombre.trim() &&
+      this.datosRegistro.apellidos.trim() &&
+      this.datosRegistro.email.trim() &&
+      this.datosRegistro.password.trim() &&
+      this.datosRegistro.pais &&
+      this.authService.validarEmail(this.datosRegistro.email) &&
+      this.authService.validarPassword(this.datosRegistro.password).valida
+    );
+  }
+
+  /**
+   * Inicia sesión
+   */
+  iniciarSesion() {
+    if (!this.validarLogin()) return;
+
+    this.enviandoFormulario = true;
+
+    this.authService.iniciarSesion(this.datosLogin).subscribe({
+      next: (exito) => {
+        if (exito) {
+          this.enviandoFormulario = false;
+          this.operacionExitosa = true;
+          this.iniciarCountdown();
+        }
+      },
+      error: (error) => {
+        console.error('Error en el login:', error);
+        this.enviandoFormulario = false;
+        
+        if (error === 'Usuario no encontrado') {
+          this.errores.email = 'Este email no está registrado';
+        } else if (error === 'Contraseña incorrecta') {
+          this.errores.password = 'Contraseña incorrecta';
+        } else {
+          this.errores.email = 'Error al iniciar sesión';
+        }
+      }
+    });
+  }
+
+  /**
+   * Registra un nuevo usuario
+   */
+  registrarUsuario() {
+    if (!this.validarRegistro()) return;
+
+    this.enviandoFormulario = true;
+
+    this.authService.registrarUsuario(this.datosRegistro).subscribe({
+      next: (exito) => {
+        if (exito) {
+          this.enviandoFormulario = false;
+          this.operacionExitosa = true;
+          this.iniciarCountdown();
+        }
+      },
+      error: (error) => {
+        console.error('Error en el registro:', error);
+        this.enviandoFormulario = false;
+        
+        if (error === 'Este email ya está registrado') {
+          this.errores.email = 'Este email ya está registrado. Intenta iniciar sesión.';
+        } else {
+          this.errores.email = 'Error al registrar usuario';
+        }
+      }
+    });
+  }
+
+  /**
+   * Valida los campos del formulario de login
+   */
+  private validarLogin(): boolean {
     this.errores = {};
     let esValido = true;
 
-    // Validar nombre
-    if (!this.datosFormulario.nombre.trim()) {
-      this.errores.nombre = 'El nombre es obligatorio';
-      esValido = false;
-    } else if (this.datosFormulario.nombre.trim().length < 2) {
-      this.errores.nombre = 'El nombre debe tener al menos 2 caracteres';
-      esValido = false;
-    }
-
-    // Validar apellidos
-    if (!this.datosFormulario.apellidos.trim()) {
-      this.errores.apellidos = 'Los apellidos son obligatorios';
-      esValido = false;
-    } else if (this.datosFormulario.apellidos.trim().length < 2) {
-      this.errores.apellidos = 'Los apellidos deben tener al menos 2 caracteres';
-      esValido = false;
-    }
-
-    // Validar email
-    if (!this.datosFormulario.email.trim()) {
+    if (!this.datosLogin.email.trim()) {
       this.errores.email = 'El correo electrónico es obligatorio';
       esValido = false;
-    } else if (!this.authService.validarEmail(this.datosFormulario.email)) {
+    } else if (!this.authService.validarEmail(this.datosLogin.email)) {
       this.errores.email = 'El formato del correo electrónico no es válido';
       esValido = false;
     }
 
-    // Validar país
-    if (!this.datosFormulario.pais) {
-      this.errores.pais = 'Debes seleccionar un país';
+    if (!this.datosLogin.password.trim()) {
+      this.errores.password = 'La contraseña es obligatoria';
       esValido = false;
     }
 
@@ -560,29 +883,61 @@ export class FormularioRegistroComponent implements OnInit {
   }
 
   /**
-   * Envía el formulario de registro
+   * Valida los campos del formulario de registro
    */
-  enviarFormulario() {
-    if (!this.validarFormulario()) {
-      return;
+  private validarRegistro(): boolean {
+    this.errores = {};
+    let esValido = true;
+
+    // Validar nombre
+    if (!this.datosRegistro.nombre.trim()) {
+      this.errores.nombre = 'El nombre es obligatorio';
+      esValido = false;
+    } else if (this.datosRegistro.nombre.trim().length < 2) {
+      this.errores.nombre = 'El nombre debe tener al menos 2 caracteres';
+      esValido = false;
     }
 
-    this.enviandoFormulario = true;
+    // Validar apellidos
+    if (!this.datosRegistro.apellidos.trim()) {
+      this.errores.apellidos = 'Los apellidos son obligatorios';
+      esValido = false;
+    } else if (this.datosRegistro.apellidos.trim().length < 2) {
+      this.errores.apellidos = 'Los apellidos deben tener al menos 2 caracteres';
+      esValido = false;
+    }
 
-    this.authService.registrarUsuario(this.datosFormulario).subscribe({
-      next: (exito) => {
-        if (exito) {
-          this.enviandoFormulario = false;
-          this.registroExitoso = true;
-          this.iniciarCountdown();
-        }
-      },
-      error: (error) => {
-        console.error('Error en el registro:', error);
-        this.enviandoFormulario = false;
-        // Aquí podrías mostrar un mensaje de error
+    // Validar email
+    if (!this.datosRegistro.email.trim()) {
+      this.errores.email = 'El correo electrónico es obligatorio';
+      esValido = false;
+    } else if (!this.authService.validarEmail(this.datosRegistro.email)) {
+      this.errores.email = 'El formato del correo electrónico no es válido';
+      esValido = false;
+    } else if (this.authService.emailEstaRegistrado(this.datosRegistro.email)) {
+      this.errores.email = 'Este email ya está registrado';
+      esValido = false;
+    }
+
+    // Validar contraseña
+    if (!this.datosRegistro.password.trim()) {
+      this.errores.password = 'La contraseña es obligatoria';
+      esValido = false;
+    } else {
+      const validacionPassword = this.authService.validarPassword(this.datosRegistro.password);
+      if (!validacionPassword.valida) {
+        this.errores.password = validacionPassword.errores.join(', ');
+        esValido = false;
       }
-    });
+    }
+
+    // Validar país
+    if (!this.datosRegistro.pais) {
+      this.errores.pais = 'Debes seleccionar un país';
+      esValido = false;
+    }
+
+    return esValido;
   }
 
   /**
@@ -599,6 +954,13 @@ export class FormularioRegistroComponent implements OnInit {
         this.cerrarModal();
       }
     }, 1000);
+  }
+
+  /**
+   * Limpia los errores
+   */
+  private limpiarErrores() {
+    this.errores = {};
   }
 
   /**
