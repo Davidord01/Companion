@@ -1,7 +1,7 @@
 /**
  * Componente de navegación principal
  * Maneja la navegación suave entre secciones y efectos de scroll
- * Ahora incluye la nueva sección de Videos y sistema de autenticación
+ * Ahora incluye la nueva sección de Videos y sistema de autenticación con ventana premium
  */
 
 import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
@@ -9,11 +9,12 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { AuthService, Usuario } from '../../services/auth.service';
 import { FormularioRegistroComponent } from '../formulario-registro/formulario-registro.component';
+import { VentanaPremiumComponent } from '../ventana-premium/ventana-premium.component';
 
 @Component({
   selector: 'app-navegacion',
   standalone: true,
-  imports: [CommonModule, FormularioRegistroComponent],
+  imports: [CommonModule, FormularioRegistroComponent, VentanaPremiumComponent],
   template: `
     <nav class="navbar" [class.scrolled]="isScrolled">
       <div class="nav-container">
@@ -51,6 +52,15 @@ import { FormularioRegistroComponent } from '../formulario-registro/formulario-r
 
           <!-- Usuario autenticado -->
           <div class="user-info" *ngIf="estaAutenticado && usuario">
+            <button 
+              class="btn-premium"
+              (click)="abrirVentanaPremium()"
+              title="Acceder a contenido premium"
+            >
+              <span class="premium-icon">👑</span>
+              <span class="premium-text">Premium</span>
+            </button>
+            
             <div class="user-avatar">
               <span class="avatar-icon">🎮</span>
             </div>
@@ -88,6 +98,9 @@ import { FormularioRegistroComponent } from '../formulario-registro/formulario-r
       (cerrar)="cerrarFormularioRegistro()"
       (registroCompletado)="onRegistroCompletado()"
     ></app-formulario-registro>
+
+    <!-- Ventana Premium -->
+    <app-ventana-premium></app-ventana-premium>
   `,
   styles: [`
     .navbar {
@@ -255,6 +268,50 @@ import { FormularioRegistroComponent } from '../formulario-registro/formulario-r
       font-size: 1.2rem;
     }
 
+    .btn-premium {
+      display: flex;
+      align-items: center;
+      gap: var(--espaciado-xs);
+      padding: var(--espaciado-xs) var(--espaciado-sm);
+      background: linear-gradient(135deg, #ffd700, #ffb347);
+      border: 2px solid #ffd700;
+      border-radius: 20px;
+      color: #2c2c2c;
+      font-family: var(--fuente-titulo);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all var(--transicion-media);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-premium::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left var(--transicion-lenta);
+    }
+
+    .btn-premium:hover::before {
+      left: 100%;
+    }
+
+    .btn-premium:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    }
+
+    .premium-icon {
+      font-size: 1.2rem;
+      animation: pulso 2s ease-in-out infinite;
+    }
+
     .user-info {
       display: flex;
       align-items: center;
@@ -405,6 +462,14 @@ import { FormularioRegistroComponent } from '../formulario-registro/formulario-r
       .user-info {
         padding: var(--espaciado-xs);
       }
+
+      .btn-premium {
+        padding: var(--espaciado-xs);
+      }
+
+      .premium-text {
+        display: none;
+      }
     }
 
     @media (max-width: 480px) {
@@ -515,11 +580,19 @@ export class NavegacionComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Abre la ventana premium
+   */
+  abrirVentanaPremium() {
+    // La ventana premium se abre automáticamente cuando el usuario está autenticado
+    // Este método puede usarse para forzar la apertura si es necesario
+  }
+
+  /**
    * Maneja el evento de registro completado
    */
   onRegistroCompletado() {
-    // El formulario ya maneja la redirección automática
     this.cerrarFormularioRegistro();
+    // La ventana premium se abrirá automáticamente cuando cambie el estado de autenticación
   }
 
   /**
