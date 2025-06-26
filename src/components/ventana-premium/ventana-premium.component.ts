@@ -23,7 +23,7 @@ interface ContenidoPremium {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="premium-overlay" [class.visible]="mostrarVentana" (click)="cerrarVentana($event)">
+    <div class="premium-overlay" [class.visible]="mostrarVentana" (click)="cerrarVentanaPremium($event)">
       <div class="premium-container">
         <!-- Encabezado Premium -->
         <div class="premium-header">
@@ -31,7 +31,7 @@ interface ContenidoPremium {
             <span class="badge-icon">👑</span>
             <span class="badge-text">CONTENIDO PREMIUM</span>
           </div>
-          <button class="btn-cerrar-premium" (click)="cerrarVentana()">
+          <button class="btn-cerrar-premium" (click)="cerrarVentanaPremium()">
             ×
           </button>
         </div>
