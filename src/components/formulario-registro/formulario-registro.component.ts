@@ -304,6 +304,17 @@ interface ErroresValidacion {
               </div>
             </div>
 
+            <!-- Debug info (temporal) -->
+            <div class="debug-info" style="background: rgba(255,255,255,0.1); padding: 10px; margin: 10px 0; border-radius: 5px; font-size: 12px;">
+              <p>Debug - Estado del formulario:</p>
+              <p>Nombre: "{{ datosRegistro.nombre }}" ({{ (datosRegistro.nombre || '').length }} chars)</p>
+              <p>Apellidos: "{{ datosRegistro.apellidos }}" ({{ (datosRegistro.apellidos || '').length }} chars)</p>
+              <p>Email: "{{ datosRegistro.email }}" (válido: {{ validarEmailLocal(datosRegistro.email) }})</p>
+              <p>Password: "{{ datosRegistro.password }}" ({{ (datosRegistro.password || '').length }} chars)</p>
+              <p>País: "{{ datosRegistro.pais }}"</p>
+              <p>Formulario válido: {{ registroValido() }}</p>
+            </div>
+
             <!-- Botones de acción -->
             <div class="form-actions">
               <button 
@@ -790,7 +801,7 @@ export class FormularioRegistroComponent implements OnInit {
    * Calcula la fortaleza de la contraseña
    */
   get passwordStrength() {
-    const password = this.datosRegistro.password;
+    const password = this.datosRegistro.password || '';
     if (!password) return { porcentaje: 0, nivel: 'debil', texto: '' };
 
     let puntos = 0;
@@ -817,10 +828,13 @@ export class FormularioRegistroComponent implements OnInit {
    * Valida el formulario de login
    */
   loginValido(): boolean {
+    const email = (this.datosLogin.email || '').trim();
+    const password = (this.datosLogin.password || '').trim();
+    
     return !!(
-      this.datosLogin.email.trim() &&
-      this.datosLogin.password.trim() &&
-      this.authService.validarEmail(this.datosLogin.email)
+      email &&
+      password &&
+      this.validarEmailLocal(email)
     );
   }
 
@@ -828,15 +842,33 @@ export class FormularioRegistroComponent implements OnInit {
    * Valida el formulario de registro
    */
   registroValido(): boolean {
-    return !!(
-      this.datosRegistro.nombre.trim() &&
-      this.datosRegistro.apellidos.trim() &&
-      this.datosRegistro.email.trim() &&
-      this.datosRegistro.password.trim() &&
-      this.datosRegistro.pais &&
-      this.authService.validarEmail(this.datosRegistro.email) &&
-      this.authService.validarPassword(this.datosRegistro.password).valida
-    );
+    const nombre = (this.datosRegistro.nombre || '').trim();
+    const apellidos = (this.datosRegistro.apellidos || '').trim();
+    const email = (this.datosRegistro.email || '').trim();
+    const password = (this.datosRegistro.password || '').trim();
+    const pais = this.datosRegistro.pais || '';
+
+    // Verificar que todos los campos tengan contenido
+    const camposCompletos = nombre.length >= 2 && 
+                           apellidos.length >= 2 && 
+                           email.length > 0 && 
+                           password.length >= 6 && 
+                           pais.length > 0;
+
+    // Verificar validaciones específicas
+    const emailValido = this.validarEmailLocal(email);
+    const passwordValida = password.length >= 6;
+
+    return camposCompletos && emailValido && passwordValida;
+  }
+
+  /**
+   * Validación local de email
+   */
+  validarEmailLocal(email: string): boolean {
+    if (!email) return false;
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   }
 
   /**
@@ -908,15 +940,15 @@ export class FormularioRegistroComponent implements OnInit {
     this.errores = {};
     let esValido = true;
 
-    if (!this.datosLogin.email.trim()) {
+    if (!this.datosLogin.email?.trim()) {
       this.errores.email = 'El correo electrónico es obligatorio';
       esValido = false;
-    } else if (!this.authService.validarEmail(this.datosLogin.email)) {
+    } else if (!this.validarEmailLocal(this.datosLogin.email)) {
       this.errores.email = 'El formato del correo electrónico no es válido';
       esValido = false;
     }
 
-    if (!this.datosLogin.password.trim()) {
+    if (!this.datosLogin.password?.trim()) {
       this.errores.password = 'La contraseña es obligatoria';
       esValido = false;
     }
@@ -932,45 +964,46 @@ export class FormularioRegistroComponent implements OnInit {
     let esValido = true;
 
     // Validar nombre
-    if (!this.datosRegistro.nombre.trim()) {
+    const nombre = (this.datosRegistro.nombre || '').trim();
+    if (!nombre) {
       this.errores.nombre = 'El nombre es obligatorio';
       esValido = false;
-    } else if (this.datosRegistro.nombre.trim().length < 2) {
+    } else if (nombre.length < 2) {
       this.errores.nombre = 'El nombre debe tener al menos 2 caracteres';
       esValido = false;
     }
 
     // Validar apellidos
-    if (!this.datosRegistro.apellidos.trim()) {
+    const apellidos = (this.datosRegistro.apellidos || '').trim();
+    if (!apellidos) {
       this.errores.apellidos = 'Los apellidos son obligatorios';
       esValido = false;
-    } else if (this.datosRegistro.apellidos.trim().length < 2) {
+    } else if (apellidos.length < 2) {
       this.errores.apellidos = 'Los apellidos deben tener al menos 2 caracteres';
       esValido = false;
     }
 
     // Validar email
-    if (!this.datosRegistro.email.trim()) {
+    const email = (this.datosRegistro.email || '').trim();
+    if (!email) {
       this.errores.email = 'El correo electrónico es obligatorio';
       esValido = false;
-    } else if (!this.authService.validarEmail(this.datosRegistro.email)) {
+    } else if (!this.validarEmailLocal(email)) {
       this.errores.email = 'El formato del correo electrónico no es válido';
       esValido = false;
-    } else if (this.authService.emailEstaRegistrado(this.datosRegistro.email)) {
+    } else if (this.authService.emailEstaRegistrado(email)) {
       this.errores.email = 'Este email ya está registrado';
       esValido = false;
     }
 
     // Validar contraseña
-    if (!this.datosRegistro.password.trim()) {
+    const password = (this.datosRegistro.password || '').trim();
+    if (!password) {
       this.errores.password = 'La contraseña es obligatoria';
       esValido = false;
-    } else {
-      const validacionPassword = this.authService.validarPassword(this.datosRegistro.password);
-      if (!validacionPassword.valida) {
-        this.errores.password = validacionPassword.errores.join(', ');
-        esValido = false;
-      }
+    } else if (password.length < 6) {
+      this.errores.password = 'La contraseña debe tener al menos 6 caracteres';
+      esValido = false;
     }
 
     // Validar país
