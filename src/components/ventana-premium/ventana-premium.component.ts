@@ -17,6 +17,7 @@ interface ContenidoPremium {
   descripcion: string;
   tipo: 'video' | 'imagen' | 'audio' | 'documento';
   url: string;
+  videoUrl?: string; // Nueva propiedad para el enlace de YouTube
   fechaLanzamiento: Date;
   exclusivo: boolean;
 }
@@ -128,7 +129,7 @@ interface ContenidoPremium {
           <div class="content-section" *ngIf="seccionActiva === 'exclusivos'">
             <h3 class="section-title">Videos Exclusivos</h3>
             <div class="content-grid">
-              <div class="premium-item" *ngFor="let item of videosExclusivos">
+              <div class="premium-item" *ngFor="let item of videosExclusivos" (click)="abrirVideo(item)">
                 <div class="item-thumbnail">
                   <img [src]="item.url" [alt]="item.titulo">
                   <div class="play-overlay">
@@ -387,6 +388,7 @@ interface ContenidoPremium {
       overflow: hidden;
       border: 1px solid var(--color-acento);
       transition: all var(--transicion-media);
+      cursor: pointer;
     }
 
     .premium-item:hover {
@@ -733,6 +735,7 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
         descripcion: 'Secuencias nunca antes vistas que revelan más sobre el pasado de Joel Miller.',
         tipo: 'video',
         url: 'https://i.f1g.fr/media/cms/1200x630_crop/2025/04/14/75af2cd534a7effa4d0d76d782de9448436cdd2625a3fbe0a489e33583f839a5.jpg',
+        videoUrl: 'https://www.youtube.com/watch?v=FnKrLgd60uU',
         fechaLanzamiento: new Date('2027-06-27'),
         exclusivo: true
       },
@@ -742,6 +745,7 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
         descripcion: 'Una versión alternativa del trailer oficial con escenas adicionales.',
         tipo: 'video',
         url: 'https://img.odcdn.com.br/wp-content/uploads/2025/04/Design-sem-nome-43-1920x1080.png',
+        videoUrl: 'https://www.youtube.com/watch?v=YwpOrsT457A',
         fechaLanzamiento: new Date('2027-06-27'),
         exclusivo: true
       },
@@ -751,10 +755,20 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
         descripcion: 'Proceso completo de diseño y creación de los diferentes tipos de infectados.',
         tipo: 'video',
         url: 'https://uploads.worldanvil.com/uploads/images/2b15c848c6f3e46aba209c5e36443d3a.jpg',
+        videoUrl: 'https://www.youtube.com/watch?v=5eT80DRgwzQ',
         fechaLanzamiento: new Date('2027-06-27'),
         exclusivo: true
       }
     ];
+  }
+
+  /**
+   * Abre un video de YouTube en una nueva pestaña
+   */
+  abrirVideo(video: ContenidoPremium) {
+    if (video.videoUrl) {
+      window.open(video.videoUrl, '_blank');
+    }
   }
 
   /**
