@@ -92,7 +92,7 @@ export class MultimediaService {
         fechaSubida: new Date('2027-06-27'),
         tamano: 52428800,
         descripcion: 'Trailer oficial revelando la historia de Ellie',
-        thumbnail: 'https://i.blogs.es/ea06ae/efjejguxoaacx0m/1366_2000.jpeg'
+        thumbnail: 'https://i.f1g.fr/media/cms/1200x630_crop/2025/04/14/75af2cd534a7effa4d0d76d782de9448436cdd2625a3fbe0a489e33583f839a5.jpg'
       },
       {
         id: 'video-2',
@@ -175,7 +175,7 @@ export class MultimediaService {
             fechaSubida: new Date('2027-06-27'),
             tamano: archivo.size,
             descripcion: descripcion || '',
-            thumbnail: tipo === 'video' ? 'https://i.blogs.es/ea06ae/efjejguxoaacx0m/1366_2000.jpeg' : undefined
+            thumbnail: tipo === 'video' ? 'https://i.f1g.fr/media/cms/1200x630_crop/2025/04/14/75af2cd534a7effa4d0d76d782de9448436cdd2625a3fbe0a489e33583f839a5.jpg' : undefined
           };
 
           // Agregar a la lista

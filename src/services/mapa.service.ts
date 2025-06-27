@@ -47,7 +47,7 @@ export class MapaService {
       recompensas: ['Munición', 'Suministros médicos', 'Información'],
       dificultad: 'facil',
       descubierto: true,
-      imagen: 'https://images.pexels.com/photos/1413412/pexels-photo-1413412.jpeg'
+      imagen: 'https://i.f1g.fr/media/cms/1200x630_crop/2025/04/14/75af2cd534a7effa4d0d76d782de9448436cdd2625a3fbe0a489e33583f839a5.jpg'
     },
     {
       id: 'bosque_infectado',
@@ -62,7 +62,7 @@ export class MapaService {
       ],
       dificultad: 'extremo',
       descubierto: false,
-      imagen: 'https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg'
+      imagen: 'https://uploads.worldanvil.com/uploads/images/2b15c848c6f3e46aba209c5e36443d3a.jpg'
     },
     {
       id: 'cache_suministros',
@@ -78,7 +78,7 @@ export class MapaService {
       recompensas: ['Munición especial', 'Medicinas', 'Herramientas', 'Mapa de área'],
       dificultad: 'medio',
       descubierto: false,
-      imagen: 'https://images.pexels.com/photos/7991580/pexels-photo-7991580.jpeg'
+      imagen: 'https://img.odcdn.com.br/wp-content/uploads/2025/04/Design-sem-nome-43-1920x1080.png'
     },
     {
       id: 'puesto_observacion',
@@ -94,7 +94,7 @@ export class MapaService {
       recompensas: ['Información de área', 'Ubicaciones marcadas'],
       dificultad: 'medio',
       descubierto: true,
-      imagen: 'https://images.pexels.com/photos/7991581/pexels-photo-7991581.jpeg'
+      imagen: 'https://criticalhits.com.br/wp-content/uploads/2025/04/1744609947856.jpg'
     },
     {
       id: 'rio_recursos',
@@ -110,7 +110,7 @@ export class MapaService {
       recompensas: ['Agua limpia', 'Plantas medicinales', 'Peces'],
       dificultad: 'facil',
       descubierto: true,
-      imagen: 'https://images.pexels.com/photos/7991582/pexels-photo-7991582.jpeg'
+      imagen: 'https://media.vogue.mx/photos/6817f51f4d09999275c41c29/master/w_1600%2Cc_limit/the-last-of-us-2-capitulo-4.jpg'
     },
     {
       id: 'ruinas_hospital',
@@ -126,7 +126,7 @@ export class MapaService {
       recompensas: ['Suministros médicos avanzados', 'Antibióticos', 'Equipo quirúrgico'],
       dificultad: 'dificil',
       descubierto: false,
-      imagen: 'https://images.pexels.com/photos/7991583/pexels-photo-7991583.jpeg'
+      imagen: 'https://img.europapress.es/fotoweb/fotonoticia_20250415101013_690.jpg'
     }
   ];
 

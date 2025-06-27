@@ -732,7 +732,7 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
         titulo: 'Escenas Eliminadas: El Pasado de Joel',
         descripcion: 'Secuencias nunca antes vistas que revelan más sobre el pasado de Joel Miller.',
         tipo: 'video',
-        url: 'https://i.blogs.es/ea06ae/efjejguxoaacx0m/1366_2000.jpeg',
+        url: 'https://i.f1g.fr/media/cms/1200x630_crop/2025/04/14/75af2cd534a7effa4d0d76d782de9448436cdd2625a3fbe0a489e33583f839a5.jpg',
         fechaLanzamiento: new Date('2027-06-27'),
         exclusivo: true
       },
@@ -741,7 +741,7 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
         titulo: 'Trailer Alternativo: La Venganza de Ellie',
         descripcion: 'Una versión alternativa del trailer oficial con escenas adicionales.',
         tipo: 'video',
-        url: 'https://e00-xlk-ue-marca.uecdn.es/uploads/2025/04/20/6805045e0cd23.jpeg',
+        url: 'https://img.odcdn.com.br/wp-content/uploads/2025/04/Design-sem-nome-43-1920x1080.png',
         fechaLanzamiento: new Date('2027-06-27'),
         exclusivo: true
       },
@@ -750,7 +750,7 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
         titulo: 'Documental: La Creación de los Infectados',
         descripcion: 'Proceso completo de diseño y creación de los diferentes tipos de infectados.',
         tipo: 'video',
-        url: 'https://sm.ign.com/ign_latam/game/t/the-last-o/the-last-of-us_9q5g.jpg',
+        url: 'https://uploads.worldanvil.com/uploads/images/2b15c848c6f3e46aba209c5e36443d3a.jpg',
         fechaLanzamiento: new Date('2027-06-27'),
         exclusivo: true
       }

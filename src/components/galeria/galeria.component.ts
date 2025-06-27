@@ -627,7 +627,7 @@ export class GaleriaComponent implements OnInit {
     this.imagenes = [
       {
         id: 1,
-        url: 'https://i.blogs.es/ea06ae/efjejguxoaacx0m/1366_2000.jpeg',
+        url: 'https://i.f1g.fr/media/cms/1200x630_crop/2025/04/14/75af2cd534a7effa4d0d76d782de9448436cdd2625a3fbe0a489e33583f839a5.jpg',
         titulo: 'Jackson en Invierno',
         descripcion: 'La comunidad de Jackson cubierta de nieve, un refugio seguro en un mundo peligroso.',
         categoria: 'paisajes',
@@ -635,7 +635,7 @@ export class GaleriaComponent implements OnInit {
       },
       {
         id: 2,
-        url: 'https://e00-xlk-ue-marca.uecdn.es/uploads/2025/04/20/6805045e0cd23.jpeg',
+        url: 'https://img.odcdn.com.br/wp-content/uploads/2025/04/Design-sem-nome-43-1920x1080.png',
         titulo: 'Ellie Williams',
         descripcion: 'La determinada protagonista en su búsqueda de venganza y redención.',
         categoria: 'personajes',
@@ -643,7 +643,7 @@ export class GaleriaComponent implements OnInit {
       },
       {
         id: 3,
-        url: 'https://sm.ign.com/ign_latam/game/t/the-last-o/the-last-of-us_9q5g.jpg',
+        url: 'https://uploads.worldanvil.com/uploads/images/2b15c848c6f3e46aba209c5e36443d3a.jpg',
         titulo: 'Camino hacia Seattle',
         descripcion: 'El peligroso viaje a través de territorios infectados hacia Seattle.',
         categoria: 'paisajes',
