@@ -33,7 +33,7 @@ export class TimelineService {
     {
       id: 1,
       titulo: 'Vida en Jackson',
-      fecha: '4 años después',
+      fecha: '27 de junio de 2027',
       descripcion: 'Ellie y Joel han establecido una vida relativamente pacífica en la comunidad de Jackson, Wyoming. Ellie entrena y patrulla los alrededores.',
       localizacion: 'Jackson, Wyoming',
       personajesInvolucrados: ['Ellie', 'Joel', 'Tommy', 'Dina'],
@@ -44,7 +44,7 @@ export class TimelineService {
     {
       id: 2,
       titulo: 'La Llegada de Abby',
-      fecha: 'Invierno 2038',
+      fecha: '27 de junio de 2027',
       descripcion: 'Un evento traumático cambia para siempre la vida de Ellie cuando el pasado de Joel regresa para enfrentarlo.',
       localizacion: 'Jackson, Wyoming',
       personajesInvolucrados: ['Joel', 'Abby', 'Ellie', 'Tommy'],
@@ -55,7 +55,7 @@ export class TimelineService {
     {
       id: 3,
       titulo: 'La Búsqueda de Venganza',
-      fecha: 'Primavera 2038',
+      fecha: '27 de junio de 2027',
       descripcion: 'Ellie emprende un viaje hacia Seattle en busca de venganza, acompañada por Dina. Su misión la llevará a enfrentar horrores inimaginables.',
       localizacion: 'Camino a Seattle',
       personajesInvolucrados: ['Ellie', 'Dina', 'Tommy'],
@@ -66,7 +66,7 @@ export class TimelineService {
     {
       id: 4,
       titulo: 'Guerra en Seattle',
-      fecha: 'Mayo 2038',
+      fecha: '27 de junio de 2027',
       descripcion: 'Seattle está en guerra entre la WLF (Washington Liberation Front) y los Serafitas. Ellie debe navegar este conflicto mientras busca a Abby.',
       localizacion: 'Seattle, Washington',
       personajesInvolucrados: ['Ellie', 'Dina', 'WLF', 'Serafitas'],
@@ -77,7 +77,7 @@ export class TimelineService {
     {
       id: 5,
       titulo: 'El Pasado de Abby',
-      fecha: '4 años antes - 2034',
+      fecha: '27 de junio de 2027',
       descripcion: 'Se revela la historia de Abby Anderson, hija del Dr. Jerry Anderson, y su motivación para buscar a Joel Miller.',
       localizacion: 'Hospital de Salt Lake City',
       personajesInvolucrados: ['Abby', 'Dr. Jerry Anderson', 'Marlene'],
@@ -88,7 +88,7 @@ export class TimelineService {
     {
       id: 6,
       titulo: 'Encuentro con Lev',
-      fecha: 'Mayo 2038',
+      fecha: '27 de junio de 2027',
       descripcion: 'Abby conoce a Lev y Yara, dos jóvenes Serafitas que cambiarán su perspectiva sobre la guerra y la humanidad.',
       localizacion: 'Territorio Serafita, Seattle',
       personajesInvolucrados: ['Abby', 'Lev', 'Yara'],
@@ -99,7 +99,7 @@ export class TimelineService {
     {
       id: 7,
       titulo: 'La Confrontación Final',
-      fecha: 'Mayo 2038',
+      fecha: '27 de junio de 2027',
       descripcion: 'Ellie y Abby se enfrentan en una confrontación final que pondrá a prueba todo lo que han aprendido sobre perdón y venganza.',
       localizacion: 'Teatro Serafita, Seattle',
       personajesInvolucrados: ['Ellie', 'Abby', 'Lev', 'Dina'],
@@ -110,7 +110,7 @@ export class TimelineService {
     {
       id: 8,
       titulo: 'Nuevo Comienzo',
-      fecha: '1 año después - 2039',
+      fecha: '27 de junio de 2027',
       descripcion: 'Las consecuencias de los eventos en Seattle reverberan mientras los supervivientes intentan reconstruir sus vidas.',
       localizacion: 'Granja en Wyoming',
       personajesInvolucrados: ['Ellie', 'Dina', 'JJ'],

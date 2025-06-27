@@ -60,7 +60,28 @@ export class MultimediaService {
    */
   private inicializarArchivosDemo() {
     const archivosDemo: ArchivoMultimedia[] = [
-      
+      {
+        id: 'audio-1',
+        nombre: 'Tema Principal - The Last of Us 2',
+        tipo: 'audio',
+        formato: '.mp3',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        duracion: 180,
+        fechaSubida: new Date('2027-06-27'),
+        tamano: 5242880,
+        descripcion: 'Banda sonora principal de la serie'
+      },
+      {
+        id: 'audio-2',
+        nombre: 'Diálogos de Ellie - Escenas Eliminadas',
+        tipo: 'audio',
+        formato: '.mp3',
+        url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.wav',
+        duracion: 240,
+        fechaSubida: new Date('2027-06-27'),
+        tamano: 7340032,
+        descripcion: 'Diálogos nunca antes escuchados de Ellie Williams'
+      },
       {
         id: 'video-1',
         nombre: 'Trailer Oficial - The Last of Us 2',
@@ -68,10 +89,10 @@ export class MultimediaService {
         formato: '.mp4',
         url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
         duracion: 300,
-        fechaSubida: new Date('2024-01-10'),
+        fechaSubida: new Date('2027-06-27'),
         tamano: 52428800,
         descripcion: 'Trailer oficial revelando la historia de Ellie',
-        thumbnail: 'https://images.pexels.com/photos/1413412/pexels-photo-1413412.jpeg'
+        thumbnail: 'https://i.blogs.es/ea06ae/efjejguxoaacx0m/1366_2000.jpeg'
       },
       {
         id: 'video-2',
@@ -80,7 +101,7 @@ export class MultimediaService {
         formato: '.mp4',
         url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
         duracion: 450,
-        fechaSubida: new Date('2024-01-25'),
+        fechaSubida: new Date('2027-06-27'),
         tamano: 104857600,
         descripcion: 'Exploración de Seattle en busca de Abby',
         thumbnail: 'https://uploads.worldanvil.com/uploads/images/2b15c848c6f3e46aba209c5e36443d3a.jpg'
@@ -151,10 +172,10 @@ export class MultimediaService {
             tipo: tipo,
             formato: '.' + archivo.name.split('.').pop()?.toLowerCase(),
             url: url,
-            fechaSubida: new Date(),
+            fechaSubida: new Date('2027-06-27'),
             tamano: archivo.size,
             descripcion: descripcion || '',
-            thumbnail: tipo === 'video' ? 'https://images.pexels.com/photos/1413412/pexels-photo-1413412.jpeg' : undefined
+            thumbnail: tipo === 'video' ? 'https://i.blogs.es/ea06ae/efjejguxoaacx0m/1366_2000.jpeg' : undefined
           };
 
           // Agregar a la lista

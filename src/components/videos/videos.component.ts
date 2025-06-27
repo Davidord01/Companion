@@ -113,7 +113,7 @@ import { MultimediaService, ArchivoMultimedia } from '../../services/multimedia.
             <!-- Thumbnail del video -->
             <div class="video-thumbnail">
               <img 
-                [src]="video.thumbnail || 'https://images.pexels.com/photos/1413412/pexels-photo-1413412.jpeg'" 
+                [src]="video.thumbnail || 'https://i.blogs.es/ea06ae/efjejguxoaacx0m/1366_2000.jpeg'" 
                 [alt]="'Thumbnail de ' + video.nombre"
                 loading="lazy"
               >

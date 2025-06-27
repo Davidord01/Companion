@@ -150,7 +150,7 @@ interface ContenidoPremium {
             <h3 class="section-title">Behind the Scenes</h3>
             <div class="behind-content">
               <div class="behind-item">
-                <img src="https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg" alt="Making of">
+                <img src="https://static1.thegamerimages.com/wordpress/wp-content/uploads/2023/01/the-last-of-us-part-2-abby-and-lev-on-a-horse.jpg" alt="Making of The Last of Us">
                 <div class="behind-info">
                   <h4>El Proceso de Creación</h4>
                   <p>Descubre cómo se crearon las escenas más emotivas de la serie, desde la conceptualización hasta la grabación final.</p>
@@ -158,7 +158,7 @@ interface ContenidoPremium {
                 </div>
               </div>
               <div class="behind-item">
-                <img src="https://images.pexels.com/photos/7991580/pexels-photo-7991580.jpeg" alt="Actores">
+                <img src="https://i.ytimg.com/vi/CRdj02QuoXI/maxresdefault.jpg" alt="Actores de The Last of Us">
                 <div class="behind-info">
                   <h4>Entrevistas con el Reparto</h4>
                   <p>Conversaciones íntimas con los actores sobre sus personajes y las emociones que experimentaron durante el rodaje.</p>
@@ -732,8 +732,8 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
         titulo: 'Escenas Eliminadas: El Pasado de Joel',
         descripcion: 'Secuencias nunca antes vistas que revelan más sobre el pasado de Joel Miller.',
         tipo: 'video',
-        url: 'https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg',
-        fechaLanzamiento: new Date('2024-01-15'),
+        url: 'https://i.blogs.es/ea06ae/efjejguxoaacx0m/1366_2000.jpeg',
+        fechaLanzamiento: new Date('2027-06-27'),
         exclusivo: true
       },
       {
@@ -741,8 +741,8 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
         titulo: 'Trailer Alternativo: La Venganza de Ellie',
         descripcion: 'Una versión alternativa del trailer oficial con escenas adicionales.',
         tipo: 'video',
-        url: 'https://images.pexels.com/photos/7991580/pexels-photo-7991580.jpeg',
-        fechaLanzamiento: new Date('2024-02-01'),
+        url: 'https://e00-xlk-ue-marca.uecdn.es/uploads/2025/04/20/6805045e0cd23.jpeg',
+        fechaLanzamiento: new Date('2027-06-27'),
         exclusivo: true
       },
       {
@@ -750,8 +750,8 @@ export class VentanaPremiumComponent implements OnInit, OnDestroy, OnChanges {
         titulo: 'Documental: La Creación de los Infectados',
         descripcion: 'Proceso completo de diseño y creación de los diferentes tipos de infectados.',
         tipo: 'video',
-        url: 'https://images.pexels.com/photos/7991581/pexels-photo-7991581.jpeg',
-        fechaLanzamiento: new Date('2024-02-15'),
+        url: 'https://sm.ign.com/ign_latam/game/t/the-last-o/the-last-of-us_9q5g.jpg',
+        fechaLanzamiento: new Date('2027-06-27'),
         exclusivo: true
       }
     ];

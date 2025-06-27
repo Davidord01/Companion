@@ -651,7 +651,7 @@ export class GaleriaComponent implements OnInit {
       },
       {
         id: 4,
-        url: 'https://images.pexels.com/photos/1413412/pexels-photo-1413412.jpeg',
+        url: 'https://criticalhits.com.br/wp-content/uploads/2025/04/1744610389268-1280x640.jpg',
         titulo: 'Enfrentamiento',
         descripcion: 'La tensión alcanza su punto máximo en los conflictos de Seattle.',
         categoria: 'accion',
@@ -683,7 +683,7 @@ export class GaleriaComponent implements OnInit {
       },
       {
         id: 8,
-        url: 'https://criticalhits.com.br/wp-content/uploads/2025/04/1744610389268-1280x640.jpg',
+        url: 'https://criticalhits.com.br/wp-content/uploads/2025/04/1744609947856.jpg',
         titulo: 'Dina Woodward',
         descripcion: 'La leal compañera de Ellie en su peligroso viaje.',
         categoria: 'personajes',
@@ -722,8 +722,6 @@ export class GaleriaComponent implements OnInit {
         alt: 'Retrato de Lev con arco tradicional'
       }
     ];
-
-    
 
     this.imagenesFiltradas = this.imagenes;
   }
